@@ -32,8 +32,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
  * @package App\Models\Base
  */
 
-// ? Puede que el Authenticatable falle
-class User extends Model implements Authenticatable
+class User extends Authenticatable
 {
 	use HasFactory;
 

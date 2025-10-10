@@ -13,7 +13,6 @@ class User extends BaseUser
 	protected $fillable = [
 		'username',
 		'email',
-		'password',
 		'display_name',
 		'biography',
 		'avatar_img',
