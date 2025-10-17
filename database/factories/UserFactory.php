@@ -33,8 +33,8 @@ class UserFactory extends Factory
             'display_name' =>  $name,
             'biography' => $this->faker->text(100),
             'verified' => rand(0, 1),
-            'status' => rand(0, 1),
-            'plan' => rand(1, 5),
+            'status' => rand(1, 4),
+            'plan' => rand(1, 2),
         ];
     }
 
