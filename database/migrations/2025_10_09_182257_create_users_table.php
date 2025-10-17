@@ -21,7 +21,7 @@ return new class extends Migration {
             $table->string('avatar_img')->nullable();
             $table->boolean('verified')->default(false);
             $table->integer('status');
-            $table->integer('plan')->nullable();
+            $table->integer('plan');
             $table->timestamps();
         });
     }

@@ -20,4 +20,18 @@ class User extends BaseUser
 		'status',
 		'plan'
 	];
+
+	//RelationShips
+
+	//Devuelve el stado del usuario
+	public function status()
+	{
+		return $this->hasOne(Status::class, 'id', 'status');
+	}
+
+	// Retorna el plan elejido del usuario
+	public function plan()
+	{
+		return $this->hasOne(Plan::class, 'id', 'plan');
+	}
 }
