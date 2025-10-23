@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Models\Base\User as BaseUser;
-use Exception;
 
 class User extends BaseUser
 {
@@ -18,7 +17,8 @@ class User extends BaseUser
 		'biography',
 		'avatar_img',
 		'status',
-		'plan'
+		'plan',
+		'password'
 	];
 
 	//RelationShips
@@ -35,7 +35,12 @@ class User extends BaseUser
 		return $this->hasOne(Plan::class, 'id', 'plan');
 	}
 
-	public static function boot()
+
+	/**
+	 * Funcion de validacion para la creacion
+	 * @deprecated
+	 */
+	/* public static function boot()
 	{
 		parent::boot();
 
@@ -50,5 +55,5 @@ class User extends BaseUser
 				throw new Exception("El correo electronico ya esta siendo utilizado");
 			}
 		});
-	}
+	} */
 }
