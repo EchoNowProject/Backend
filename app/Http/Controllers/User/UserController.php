@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\User;
 
+use App\Actions\Fortify\CreateNewUser;
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -14,7 +16,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        return "hola controller";
+        //
     }
 
     /**
@@ -22,10 +24,13 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
+
+        $data = $request->all();
         DB::beginTransaction();
-        $user = User::fill($request->all());
-        // ! Terminar
+        $fortify = new CreateNewUser();
+        $fortify->create($data);
         DB::commit();
+        return response()->json('Usuario creado con exito', 200);
     }
 
     /**

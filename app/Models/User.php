@@ -16,9 +16,9 @@ class User extends BaseUser
 		'display_name',
 		'biography',
 		'avatar_img',
-		'verified',
 		'status',
-		'plan'
+		'plan',
+		'password'
 	];
 
 	//RelationShips
@@ -34,4 +34,26 @@ class User extends BaseUser
 	{
 		return $this->hasOne(Plan::class, 'id', 'plan');
 	}
+
+
+	/**
+	 * Funcion de validacion para la creacion
+	 * @deprecated
+	 */
+	/* public static function boot()
+	{
+		parent::boot();
+
+		static::saving(function ($user) {
+			$usuario = static::where('username', $user->username)->first();
+			$email = static::where('email', $user->email)->first();
+
+			if ($usuario) {
+				throw new Exception("El nombre de usuario ya esta siendo utilizado");
+			}
+			if ($email) {
+				throw new Exception("El correo electronico ya esta siendo utilizado");
+			}
+		});
+	} */
 }

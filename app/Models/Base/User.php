@@ -39,7 +39,6 @@ class User extends Authenticatable
 	protected $table = 'users';
 
 	protected $casts = [
-		'verified' => 'bool',
 		'status' => 'int',
 		'plan' => 'int'
 	];
