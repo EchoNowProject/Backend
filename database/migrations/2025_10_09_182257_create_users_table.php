@@ -19,7 +19,6 @@ return new class extends Migration {
             $table->string('display_name')->nullable();
             $table->text('biography')->nullable();
             $table->string('avatar_img')->nullable();
-            $table->boolean('verified')->default(false);
             $table->integer('status');
             $table->integer('plan');
             $table->timestamps();

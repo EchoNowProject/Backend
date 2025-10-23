@@ -32,7 +32,6 @@ class UserFactory extends Factory
             'email' => $this->faker->email(),
             'display_name' =>  $name,
             'biography' => $this->faker->text(100),
-            'verified' => rand(0, 1),
             'status' => rand(1, 4),
             'plan' => rand(1, 2),
         ];
