@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('plans', function (Blueprint $table) {
+        Schema::create('plan_user', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->enum('name', ['basic', 'purple_team']);
         });
     }
 
@@ -22,6 +22,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('plans');
+        Schema::dropIfExists('plans_user');
     }
 };
