@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('servers', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->text('description');
+            $table->text('description')->nullable();
             $table->string('avatar_img')->nullable();
             $table->integer('owner_id');
             $table->timestamps();
