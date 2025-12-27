@@ -9,15 +9,15 @@ namespace App\Models\Base;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Class Plan
+ * Class PlanUser
  * 
  * @property int $id
  * @property string $name
  *
  * @package App\Models\Base
  */
-class Plan extends Model
+class PlanUser extends Model
 {
-	protected $table = 'plans';
+	protected $table = 'plan_user';
 	public $timestamps = false;
 }

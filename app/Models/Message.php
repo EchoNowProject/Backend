@@ -10,8 +10,8 @@ class Message extends BaseMessage
 		'conversation_id',
 		'user_sender_id',
 		'content',
-		'type',
-		'file_url',
+		'type_msg',
+		'file',
 		'read_by'
 	];
 }

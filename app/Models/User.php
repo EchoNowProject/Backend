@@ -26,13 +26,13 @@ class User extends BaseUser
 	//Devuelve el stado del usuario
 	public function status()
 	{
-		return $this->hasOne(Status::class, 'id', 'status');
+		return $this->hasOne(StatusUser::class, 'id', 'status');
 	}
 
 	// Retorna el plan elejido del usuario
 	public function plan()
 	{
-		return $this->hasOne(Plan::class, 'id', 'plan');
+		return $this->hasOne(PlanUser::class, 'id', 'plan');
 	}
 
 

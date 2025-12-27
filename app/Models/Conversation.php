@@ -7,6 +7,7 @@ use App\Models\Base\Conversation as BaseConversation;
 class Conversation extends BaseConversation
 {
 	protected $fillable = [
-		'type'
+		'channel_id',
+		'type_conversation'
 	];
 }

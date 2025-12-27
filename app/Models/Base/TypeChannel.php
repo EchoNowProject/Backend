@@ -9,15 +9,15 @@ namespace App\Models\Base;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Class Status
+ * Class TypeChannel
  * 
  * @property int $id
  * @property string $name
  *
  * @package App\Models\Base
  */
-class Status extends Model
+class TypeChannel extends Model
 {
-	protected $table = 'status';
+	protected $table = 'type_channel';
 	public $timestamps = false;
 }

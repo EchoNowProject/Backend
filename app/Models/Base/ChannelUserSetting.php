@@ -10,21 +10,25 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Class Conversation
+ * Class ChannelUserSetting
  * 
  * @property int $id
  * @property int $channel_id
- * @property string $type_conversation
+ * @property int $user_id
+ * @property bool $muted
+ * @property string $notification_level
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  *
  * @package App\Models\Base
  */
-class Conversation extends Model
+class ChannelUserSetting extends Model
 {
-	protected $table = 'conversations';
+	protected $table = 'channel_user_settings';
 
 	protected $casts = [
-		'channel_id' => 'int'
+		'channel_id' => 'int',
+		'user_id' => 'int',
+		'muted' => 'bool'
 	];
 }

@@ -8,7 +8,6 @@ namespace App\Models\Base;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -23,11 +22,13 @@ use Laravel\Sanctum\HasApiTokens;
  * @property string|null $display_name
  * @property string|null $biography
  * @property string|null $avatar_img
- * @property bool $verified
  * @property int $status
  * @property int|null $plan
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property string|null $two_factor_secret
+ * @property string|null $two_factor_recovery_codes
+ * @property Carbon|null $two_factor_confirmed_at
  *
  * @package App\Models\Base
  */
@@ -40,6 +41,7 @@ class User extends Authenticatable
 
 	protected $casts = [
 		'status' => 'int',
-		'plan' => 'int'
+		'plan' => 'int',
+		'two_factor_confirmed_at' => 'datetime'
 	];
 }

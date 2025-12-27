@@ -10,25 +10,25 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Class ConversationParticipant
+ * Class VoiceSession
  * 
  * @property int $id
- * @property int $conversation_id
+ * @property int $channel_id
  * @property int $user_id
- * @property int $participant_role
  * @property Carbon $joined_at
+ * @property Carbon $left_at
  *
  * @package App\Models\Base
  */
-class ConversationParticipant extends Model
+class VoiceSession extends Model
 {
-	protected $table = 'conversation_participants';
+	protected $table = 'voice_sessions';
 	public $timestamps = false;
 
 	protected $casts = [
-		'conversation_id' => 'int',
+		'channel_id' => 'int',
 		'user_id' => 'int',
-		'participant_role' => 'int',
-		'joined_at' => 'datetime'
+		'joined_at' => 'datetime',
+		'left_at' => 'datetime'
 	];
 }

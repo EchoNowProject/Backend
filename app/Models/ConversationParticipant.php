@@ -9,6 +9,7 @@ class ConversationParticipant extends BaseConversationParticipant
 	protected $fillable = [
 		'conversation_id',
 		'user_id',
+		'participant_role',
 		'joined_at'
 	];
 }

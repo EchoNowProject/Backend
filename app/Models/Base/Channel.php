@@ -10,21 +10,24 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Class Conversation
+ * Class Channel
  * 
  * @property int $id
- * @property int $channel_id
- * @property string $type_conversation
+ * @property int $server_id
+ * @property string $name
+ * @property int $type_channels
+ * @property string $permissions
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  *
  * @package App\Models\Base
  */
-class Conversation extends Model
+class Channel extends Model
 {
-	protected $table = 'conversations';
+	protected $table = 'channels';
 
 	protected $casts = [
-		'channel_id' => 'int'
+		'server_id' => 'int',
+		'type_channels' => 'int'
 	];
 }
