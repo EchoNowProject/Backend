@@ -6,6 +6,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
+//
+// ? Para mas informacion de la Autenticacion consultar en
+// ? https://jwt-auth.readthedocs.io/en/develop/
+//
+
 class AuthController extends Controller
 {
     /**
@@ -14,7 +19,6 @@ class AuthController extends Controller
      */
     public function login(Request $request)
     {
-
         $credenciales = Validator::make($request->all(), [
             'email' => ['required', 'email'],
             'password' => ['required'],
@@ -23,11 +27,60 @@ class AuthController extends Controller
             'password.required' => "Falta el campo contraseña"
         ])->validate();
 
-        if (Auth::attempt($credenciales)) {
-            //$request->session()->regenerate();
-            return response()->json("Sesion iniciada con exito", 200);
+        if (! $token = Auth::attempt($credenciales)) {
+            return response()->json(['error' => 'Unauthorized'], 401);
         }
 
-        return response()->json("El usuario y la contraseña no coinciden", 401);
+
+        return $this->respondWithToken($token);
+    }
+
+    /**
+     * Get the authenticated User.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function me()
+    {
+        return response()->json(Auth::user());
+    }
+
+    /**
+     * Log the user out (Invalidate the token).
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function logout()
+    {
+        Auth::logout();
+
+        return response()->json(['message' => 'Successfully logged out']);
+    }
+
+    /**
+     * Refresh a token.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function refresh()
+    {
+        return $this->respondWithToken(Auth::refresh());
+    }
+
+    /**
+     * Get the token array structure.
+     *
+     * @param  string $token
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    protected function respondWithToken($token)
+    {
+        return response()->json([
+            'access_token' => $token,
+            'token_type' => 'bearer',
+            'expires_in' => Auth::factory()->getTTL() * 60,
+            'user' => Auth::user()
+        ]);
     }
 }
