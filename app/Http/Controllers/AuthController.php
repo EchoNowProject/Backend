@@ -15,7 +15,6 @@ class AuthController extends Controller
 {
     /**
      * Handle an authentication attempt.
-     * ! Falta pasar el token
      */
     public function login(Request $request)
     {
@@ -79,7 +78,7 @@ class AuthController extends Controller
         return response()->json([
             'access_token' => $token,
             'token_type' => 'bearer',
-            'expires_in' => Auth::factory()->getTTL() * 60,
+            //'expires_in' => Auth::factory()->getTTL() * 60,
             'user' => Auth::user()
         ]);
     }

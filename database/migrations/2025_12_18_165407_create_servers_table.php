@@ -16,6 +16,8 @@ return new class extends Migration
             $table->string('name');
             $table->text('description')->nullable();
             $table->string('avatar_img')->nullable();
+            $table->text('invitation_code')->unique();
+            $table->enum('type_server', ['public', 'private']);
             $table->integer('owner_id');
             $table->timestamps();
         });
