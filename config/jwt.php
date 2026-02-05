@@ -101,7 +101,7 @@ return [
     |
     */
 
-    'ttl' => env('JWT_TTL', 60),
+    'ttl' => env('JWT_TTL', null),
 
     /*
     |--------------------------------------------------------------------------
@@ -144,13 +144,14 @@ return [
     |
     */
 
+    //! Meter si queremos que la sesion tenga duracion
     'required_claims' => [
-        'iss',
-        'iat',
-        'exp',
-        'nbf',
-        'sub',
-        'jti',
+        //'iss',
+        //'iat',
+        //'exp',
+        //'nbf',
+        //'sub',
+        //'jti',
     ],
 
     /*
