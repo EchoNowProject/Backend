@@ -18,7 +18,7 @@ class ServerController extends Controller
      */
     public function index()
     {
-        //
+        return Server::where('owner_id', Auth::id())->get();
     }
 
     /**
