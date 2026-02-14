@@ -24,7 +24,7 @@ class User extends BaseUser
 	//RelationShips
 
 	//Devuelve el stado del usuario
-	public function status()
+	public function statusUser()
 	{
 		return $this->hasOne(StatusUser::class, 'id', 'status');
 	}
