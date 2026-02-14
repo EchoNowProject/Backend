@@ -62,6 +62,11 @@ class StatusUserController extends Controller
 
             $user->status = $idStatus;
             $user->save();
+
+            return response()->json(
+                $user->statusUser,
+                200
+            );
         }
     }
 }
