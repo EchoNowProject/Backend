@@ -4,9 +4,11 @@ namespace App\Http\Controllers\User;
 
 use App\Actions\Fortify\CreateNewUser;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreUserRequest;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
@@ -48,9 +50,19 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(StoreUserRequest $request)
     {
-        //
+        try {
+            DB::beginTransaction();
+            $user = Auth::user();
+            $user->update($request->validated());
+
+            DB::commit();
+            return response()->json($user, 200);
+        } catch (Exception $error) {
+            DB::rollBack();
+            return response()->json(['user' => Auth::user(), 'error' => $error->getMessage()], 500);
+        }
     }
 
     /**

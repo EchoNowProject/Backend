@@ -7,5 +7,5 @@ use Illuminate\Support\Facades\Route;
 Route::apiResource('users', UserController::class);
 
 Route::prefix('user')->group(function () {
-    // Para mas rutas de los usuarios
+    Route::put('/update', [UserController::class, 'update']);
 });
