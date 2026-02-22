@@ -40,7 +40,7 @@ class UserController extends Controller
      */
     public function show(string $id)
     {
-        $user = User::with('status', 'plan')->find($id);
+        $user = User::with('statusUser', 'plan')->find($id);
         if (isset($user)) {
             return response()->json($user, 200);
         }

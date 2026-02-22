@@ -16,6 +16,8 @@ class User extends BaseUser
 		'email',
 		'display_name',
 		'biography',
+		'telephone_number',
+		'prefix_telephone_number',
 		'avatar_img',
 		'status',
 		'plan',

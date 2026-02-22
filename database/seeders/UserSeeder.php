@@ -17,12 +17,15 @@ class UserSeeder extends Seeder
     {
         if (config('app.env') === 'local') {
             User::create([
+                'id' => 100,
                 'username' => 'blazquezz.aj',
                 'password' => Hash::make('HolaMundo1234%'),
                 'email' => 'antblajim@gmail.com',
                 //'display_name' => ,
                 //'biography' => $this->faker->text(100),
                 'status' => rand(1, 4),
+                'telephone_number' => 694420542,
+                'prefix_telephone_number' => 34,
                 'plan' => rand(1, 2),
                 'avatar_img' => 'IMG_0432.jpg'
             ]);

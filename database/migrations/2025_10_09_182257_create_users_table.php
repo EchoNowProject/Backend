@@ -18,6 +18,8 @@ return new class extends Migration {
             $table->string('password');
             $table->string('display_name')->nullable();
             $table->text('biography')->nullable();
+            $table->integer('telephone_number')->nullable();
+            $table->integer('prefix_telephone_number')->nullable();
             $table->string('avatar_img')->nullable();
             $table->integer('status');
             $table->integer('plan');
