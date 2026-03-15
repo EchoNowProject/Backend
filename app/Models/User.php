@@ -26,7 +26,8 @@ class User extends BaseUser
 
 	protected $appends = ['file_avatar_image'];
 
-	//RelationShips
+	/* ---------- Relationships ---------- */
+
 
 	//Devuelve el stado del usuario
 	public function statusUser()
@@ -39,6 +40,12 @@ class User extends BaseUser
 	{
 		return $this->hasOne(PlanUser::class, 'id', 'plan');
 	}
+	public function generalSettings()
+	{
+		return $this->hasOne(UserSetting::class, 'user_id', 'id');
+	}
+
+	/* ---------- Atributos ---------- */
 
 	// https://stackoverflow.com/questions/3967515/how-to-convert-an-image-to-base64-encoding
 	protected function fileAvatarImage(): Attribute

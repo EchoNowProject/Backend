@@ -12,7 +12,6 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * Class UserSetting
  * 
- * @property int $id
  * @property int $user_id
  * @property string $theme
  * @property bool $notifications_enable
@@ -26,6 +25,8 @@ use Illuminate\Database\Eloquent\Model;
 class UserSetting extends Model
 {
 	protected $table = 'user_settings';
+	protected $primaryKey = 'user_id';
+	public $incrementing = false;
 
 	protected $casts = [
 		'user_id' => 'int',

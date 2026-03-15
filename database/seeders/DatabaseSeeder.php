@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             StatusUserSeeder::class,
             UserSeeder::class,
+            UserSettingsSeeder::class,
             UserNotificationsSettingsSeeder::class,
             UserPrivacySettingSeedeer::class,
         ]);
