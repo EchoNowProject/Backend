@@ -15,6 +15,7 @@ Route::middleware('userlogged')->group(function () {
     });
 
     Route::prefix('user-notifications-settings')->group(function () {
-        Route::get('/get', [UserNotificationSettingsController::class, 'getUserNotificationsSettings']);
+        Route::get('/', [UserNotificationSettingsController::class, 'getUserNotificationsSettings']);
+        Route::put('/', [UserNotificationSettingsController::class, 'saveUserNotificationsSettings']);
     });
 });

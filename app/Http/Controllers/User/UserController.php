@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\User;
 
 use App\Actions\Fortify\CreateNewUser;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreUserRequest;
 use App\Models\User;
@@ -61,7 +62,7 @@ class UserController extends Controller
             return response()->json($user, 200);
         } catch (Exception $error) {
             DB::rollBack();
-            return response()->json(['user' => Auth::user(), 'error' => $error->getMessage()], 500);
+            return response()->json(['user' => AuthController::me(), 'error' => $error->getMessage()], 500);
         }
     }
 
