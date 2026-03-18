@@ -13,7 +13,7 @@ class UserNotificationSettingsController extends Controller
     public function getUserNotificationsSettings()
     {
         $user = Auth::user();
-        return UserNotificationSetting::findOrFail($user->id)->first();
+        return UserNotificationSetting::findOrFail($user->id);
     }
 
     public function saveUserNotificationsSettings(Request $request)
