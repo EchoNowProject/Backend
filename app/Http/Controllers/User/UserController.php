@@ -53,16 +53,31 @@ class UserController extends Controller
      */
     public function update(StoreUserRequest $request)
     {
-        try {
-            DB::beginTransaction();
-            $user = Auth::user();
-            $user->update($request->validated());
+        $user = Auth::user();
 
+        try {
+            if (
+                !ctype_digit($request->all()['telephone_number'])
+                || strlen($request->all()['telephone_number']) > 15
+            ) {
+                throw new Exception('El campo número de teléfono no es válido');
+            }
+
+            DB::beginTransaction();
+            $user->update([
+                'username' => $request->validated()['username'],
+                'display_name' => $request->all()['display_name'] ?? null,
+                'biography' => $request->all()['biography'] ?? null,
+                'telephone_number' => $request->all()['telephone_number'] ?? null,
+                'prefix_telephone_number' => $request->all()['prefix_telephone_number'] ?? null,
+            ]);
             DB::commit();
-            return response()->json($user, 200);
+
+            return response()->json($user->load('generalSettings'), 200);
         } catch (Exception $error) {
             DB::rollBack();
-            return response()->json(['user' => AuthController::me(), 'error' => $error->getMessage()], 500);
+            $user = $user->load('generalSettings');
+            return response()->json(['user' => $user, 'error' => $error->getMessage()], 500);
         }
     }
 

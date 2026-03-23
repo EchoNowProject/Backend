@@ -6,6 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Validation\Rule;
 
 class StoreUserRequest extends FormRequest
 {
@@ -25,8 +26,8 @@ class StoreUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'username' => ['required', 'string'],
-            'email' => ['required', 'email']
+            'username' => ['required', 'string', Rule::unique('users', 'username')->ignore(Auth::id())],
+            'email' => ['required', 'email'],
         ];
     }
 
@@ -34,8 +35,11 @@ class StoreUserRequest extends FormRequest
     {
         return [
             'username.required' => "El campo nombre de usuario es obligatorio",
+            'username.unique' => "El campo nombre de usuario ya esta siendo utilizado por otro usuario",
             'email.required' => "El campo correo electrónico es obligatorio",
             'email.email' => "El campo correo electrónico tiene que ser de tipo email",
+            'telephone_number.numeric' => 'El campo número de teléfono no es válido',
+            'telephone_number.max_digits' => 'El campo número de teléfono supera el máximo de digitos permitidos',
         ];
     }
 
