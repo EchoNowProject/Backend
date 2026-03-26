@@ -14,16 +14,43 @@ class ResetUserPassword implements ResetsUserPasswords
     /**
      * Validate and reset the user's forgotten password.
      *
-     * @param  array<string, string>  $input
+     * @param User $user, array $input
      */
-    public function reset(User $user, array $input): void
+    public function reset(User $user, array $input): array
     {
-        Validator::make($input, [
-            'password' => $this->passwordRules(),
-        ])->validate();
 
-        $user->forceFill([
-            'password' => Hash::make($input['password']),
-        ])->save();
+        if (!Hash::check($input['actualPassword'], $user->password)) {
+            return [
+                'success' => false,
+                'message' => 'La contraseña actual no es correcta.',
+                'httpStatus' => 400,
+            ];
+        }
+
+        $validator = Validator::make($input, [
+            'actualPassword' => $this->passwordValidationRules(),
+            'newPassword' => $this->passwordValidationRules(true),
+        ], [
+            'actualPassword' => $this->passwordMessages(),
+            'newPassword' => $this->passwordMessages(),
+        ]);
+
+        if ($validator->fails()) {
+            return [
+                'success' => false,
+                'message' => $validator->messages()->first(),
+                'httpStatus' => 422,
+            ];
+        }
+
+        $user->update([
+            'password' => Hash::make($input['newPassword']),
+        ]);
+
+        return [
+            'success' => true,
+            'message' => 'Contraseña actualizada correctamente.',
+            'httpStatus' => 200,
+        ];
     }
 }
