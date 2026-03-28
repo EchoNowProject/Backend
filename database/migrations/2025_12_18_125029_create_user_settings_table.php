@@ -12,12 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('user_settings', function (Blueprint $table) {
-            $table->id();
-            $table->integer('user_id');
-            $table->enum('theme', ['light', 'darl', 'system']);
+            $table->integer('user_id')->primary();
+            $table->enum('theme', ['light', 'dark', 'system'])->default('dark');
             $table->boolean('notifications_enable')->default(true);
             $table->boolean('sound_enable')->default(true);
-            $table->integer('volume')->default(true);
+            $table->integer('volume')->default(100);
             $table->timestamps();
         });
     }

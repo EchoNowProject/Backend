@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\Fortify\ResetUserPassword;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -39,9 +41,10 @@ class AuthController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function me()
+    public static function me()
     {
-        return response()->json(Auth::user());
+        $user = Auth::user();
+        return response()->json($user->load('generalSettings'));
     }
 
     /**
@@ -75,11 +78,29 @@ class AuthController extends Controller
      */
     protected function respondWithToken($token)
     {
+        $user = Auth::user();
+
         return response()->json([
             'access_token' => $token,
             'token_type' => 'bearer',
             //'expires_in' => Auth::factory()->getTTL() * 60,
-            'user' => Auth::user()
+            'user' => $user->load('generalSettings'),
         ]);
+    }
+
+    /**
+     * Actualiza la contraseña de un usuario logueado
+     * @param $actualPassword
+     * @param $newPassword
+     * @param $confirmPassword
+     * @return void
+     */
+    public function updatePassword(Request $request): JsonResponse
+    {
+        $user = Auth::user();
+        $resetUser = new ResetUserPassword();
+        $passwordChanged = $resetUser->reset($user, $request->all()['data']);
+
+        return response()->json($passwordChanged['message'], $passwordChanged['httpStatus']);
     }
 }

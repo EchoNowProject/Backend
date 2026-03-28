@@ -3,9 +3,13 @@
 namespace App\Models;
 
 use App\Models\Base\User as BaseUser;
+use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Support\Facades\Storage;
 
 class User extends BaseUser
 {
+	const IMAGEUSERPATH = "/users/";
+
 	protected $hidden = [
 		'password'
 	];
@@ -15,16 +19,21 @@ class User extends BaseUser
 		'email',
 		'display_name',
 		'biography',
+		'telephone_number',
+		'prefix_telephone_number',
 		'avatar_img',
 		'status',
 		'plan',
 		'password'
 	];
 
-	//RelationShips
+	protected $appends = ['file_avatar_image'];
+
+	/* ---------- Relationships ---------- */
+
 
 	//Devuelve el stado del usuario
-	public function status()
+	public function statusUser()
 	{
 		return $this->hasOne(StatusUser::class, 'id', 'status');
 	}
@@ -33,6 +42,38 @@ class User extends BaseUser
 	public function plan()
 	{
 		return $this->hasOne(PlanUser::class, 'id', 'plan');
+	}
+	public function generalSettings()
+	{
+		return $this->hasOne(UserSetting::class, 'user_id', 'id');
+	}
+
+	/* ---------- Atributos ---------- */
+
+	// https://stackoverflow.com/questions/3967515/how-to-convert-an-image-to-base64-encoding
+	protected function fileAvatarImage(): Attribute
+	{
+		return Attribute::make(
+			get: function () {
+				if (!$this->avatar_img) {
+					return null;
+				}
+
+				$path = Storage::disk('public')->path(self::IMAGEUSERPATH . $this->avatar_img);
+
+				if (!file_exists($path)) {
+					return null;
+				}
+
+				$type = pathinfo($path, PATHINFO_EXTENSION);
+				$data = file_get_contents($path);
+
+				return [
+					'base64' => base64_encode($data),
+					'mime_type' => $type,
+				];
+			}
+		);
 	}
 
 
