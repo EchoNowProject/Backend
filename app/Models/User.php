@@ -4,9 +4,12 @@ namespace App\Models;
 
 use App\Models\Base\User as BaseUser;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Support\Facades\Storage;
 
 class User extends BaseUser
 {
+	const IMAGEUSERPATH = "/users/";
+
 	protected $hidden = [
 		'password'
 	];
@@ -56,7 +59,7 @@ class User extends BaseUser
 					return null;
 				}
 
-				$path = storage_path('app/private/users/' . $this->avatar_img);
+				$path = Storage::disk('public')->path(self::IMAGEUSERPATH . $this->avatar_img);
 
 				if (!file_exists($path)) {
 					return null;

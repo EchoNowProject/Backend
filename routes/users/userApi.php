@@ -11,6 +11,8 @@ Route::middleware('userlogged')->group(function () {
 
     Route::prefix('user')->group(function () {
         Route::put('/update', [UserController::class, 'update']);
+        Route::delete('/delete-image', [UserController::class, 'deleteUserImage']);
+        Route::put('/update-image', [UserController::class, 'updateUserImage']);
     });
 
     Route::prefix('user-notifications-settings')->group(function () {
