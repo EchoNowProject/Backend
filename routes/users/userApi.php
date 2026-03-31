@@ -5,6 +5,8 @@ use App\Http\Controllers\User\UserNotificationSettingsController;
 use App\Http\Controllers\User\UserPrivacityController;
 use Illuminate\Support\Facades\Route;
 
+Route::post('users/new', [UserController::class, 'store']);
+
 Route::middleware('userlogged')->group(function () {
 
     Route::apiResource('users', UserController::class);

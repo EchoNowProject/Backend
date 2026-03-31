@@ -4,8 +4,6 @@ namespace App\Http\Controllers\User;
 
 use App\Actions\Fortify\CreateNewUser;
 use App\Actions\Images\DeleteImage;
-use App\Actions\Images\GetExtension;
-use App\Actions\Images\GetMimeType;
 use App\Actions\Images\UpdateImage;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreUserRequest;
@@ -35,11 +33,13 @@ class UserController extends Controller
     {
 
         $data = $request->all();
-        DB::beginTransaction();
         $fortify = new CreateNewUser();
-        $fortify->create($data);
-        DB::commit();
-        return response()->json('Usuario creado con exito', 200);
+        $data = $fortify->create($data);
+        if ($data['success']) {
+            return response()->json('Usuario creado con exito', 200);
+        } else {
+            return response()->json($data['message'], 500);
+        }
     }
 
     /**
