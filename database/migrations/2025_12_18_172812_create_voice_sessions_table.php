@@ -15,8 +15,9 @@ return new class extends Migration
             $table->id();
             $table->integer('channel_id');
             $table->integer('user_id');
-            $table->timestamp('joined_at');
-            $table->timestamp('left_at');
+            // Si no se le agrega el nullable al timestamp es posible que con otro motor de base de datos falle
+            $table->timestamp('joined_at')->nullable();
+            $table->timestamp('left_at')->nullable();
         });
     }
 

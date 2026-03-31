@@ -10,6 +10,7 @@ class UserNotificationSetting extends BaseUserNotificationSetting
 	protected $primaryKey = 'user_id';
 
 	protected $fillable = [
+		'user_id',
 		'email_notifications',
 		'push_notifications',
 		'notify_friend_requests',
