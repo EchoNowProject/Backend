@@ -9,7 +9,10 @@ Route::post('users/new', [UserController::class, 'store']);
 
 Route::middleware('userlogged')->group(function () {
 
-    Route::apiResource('users', UserController::class);
+    Route::prefix('users')->group(function () {
+        Route::get('{id}', [UserController::class, 'show']);
+    });
+
 
     Route::prefix('user')->group(function () {
         Route::put('/update', [UserController::class, 'update']);
