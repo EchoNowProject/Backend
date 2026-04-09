@@ -9,20 +9,22 @@ use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Log;
 
 // ! Si no se pone el ShouldBroadcast no funcionará
 class FriendRequestEvent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $user;
+    public $userSender;
+    public $receiverId;
+
     /**
      * Create a new event instance.
      */
-    public function __construct($user)
+    public function __construct($userSender, $receiverId)
     {
-        $this->user = $user;
+        $this->userSender = $userSender;
+        $this->receiverId = $receiverId;
     }
 
     /**
@@ -30,12 +32,9 @@ class FriendRequestEvent implements ShouldBroadcast
      *
      * @return array<int, \Illuminate\Broadcasting\Channel>
      */
-    public function broadcastOn(): array
+    public function broadcastOn(): Channel
     {
-        Log::info('broadcast ejecutado');
-        return [
-            new Channel('friend-request'),
-        ];
+        return new PrivateChannel('friend-request.' . $this->receiverId);
     }
 
     public function broadcastAs()

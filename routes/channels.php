@@ -10,6 +10,6 @@ Broadcast::channel('test-channel', function ($user) {
     return true; // permite acceso (para pruebas)
 });
 
-Broadcast::channel('friend-request', function ($user) {
-    return true;
+Broadcast::channel('friend-request.{id}', function ($user, $id) {
+    return (int) $user->id === (int) $id;
 });

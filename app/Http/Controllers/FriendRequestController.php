@@ -38,7 +38,7 @@ class FriendRequestController extends Controller
             'user_id_send_request' => Auth::id(),
         ]);
 
-        broadcast(new FriendRequestEvent($friendRequest->senderUser))->toOthers();
+        broadcast(new FriendRequestEvent($friendRequest->senderUser, (int)$userReiver))->toOthers();
 
         return response()->json('Solicitud de amistad entregada', 200);
     }
