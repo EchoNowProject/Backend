@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Events\FriendRequestEvent;
 use App\Models\FriendRequest;
 use App\Models\User;
+use App\Models\UserAlert;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -31,14 +32,21 @@ class FriendRequestController extends Controller
 
     public function send(Request $request)
     {
-        $userReiver =  $request->data['id'];
+        $userReiver =  User::findOrFail((int)$request->data['id']);
 
         $friendRequest = FriendRequest::create([
-            'user_id_receive_request' => (int)$userReiver,
+            'user_id_receive_request' => $userReiver->id,
             'user_id_send_request' => Auth::id(),
         ]);
 
-        broadcast(new FriendRequestEvent($friendRequest->senderUser, (int)$userReiver))->toOthers();
+        UserAlert::create([
+            'source_user_id' => Auth::id(),
+            'target_user_id' => $userReiver->id,
+            'type' => 'friend_request',
+            'message' => '¡' . $userReiver->username . " quiere ser tu amigo!",
+        ]);
+
+        broadcast(new FriendRequestEvent($friendRequest->senderUser, $userReiver->id))->toOthers();
 
         return response()->json('Solicitud de amistad entregada', 200);
     }
