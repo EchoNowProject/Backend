@@ -8,6 +8,7 @@ use App\Models\FriendRequest;
 use App\Models\UserAlert;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -47,5 +48,15 @@ class FriendsController extends Controller
             DB::rollBack();
             return response()->json('No se ha podido aceptar la solicitud de seguimiento', 500);
         }
+    }
+
+    public function getFriends()
+    {
+
+        $friends = Friend::where('second_user_id', Auth::id())
+            ->get(['first_user_id', 'first_user_username'])
+            ->toArray();
+
+        return response()->json($friends, 200);
     }
 }
