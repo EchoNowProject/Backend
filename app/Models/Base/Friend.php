@@ -10,23 +10,24 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Class FriendRequest
+ * Class Friend
  * 
  * @property int $id
- * @property int $user_id_send_request
- * @property int $user_id_receive_request
+ * @property int $first_user_id
+ * @property string $first_user_username
+ * @property int $second_user_id
+ * @property string $second_user_username
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  *
  * @package App\Models\Base
  */
-class FriendRequest extends Model
+class Friend extends Model
 {
-	protected $table = 'friend_requests';
-	protected $primaryKey = 'id';
+	protected $table = 'friends';
 
 	protected $casts = [
-		'user_id_send_request' => 'int',
-		'user_id_receive_request' => 'int'
+		'first_user_id' => 'int',
+		'second_user_id' => 'int'
 	];
 }

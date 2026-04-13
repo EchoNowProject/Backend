@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\FriendRequestController;
+use App\Http\Controllers\Friends\FriendRequestController;
 use Illuminate\Support\Facades\Route;
 
 

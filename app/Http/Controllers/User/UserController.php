@@ -7,7 +7,6 @@ use App\Actions\Images\DeleteImage;
 use App\Actions\Images\UpdateImage;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreUserRequest;
-use App\Models\FriendRequest;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;

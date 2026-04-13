@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Friends;
 
+use App\Http\Controllers\Controller;
 use App\Events\FriendRequestEvent;
 use App\Models\FriendRequest;
 use App\Models\User;
@@ -12,6 +13,11 @@ use Illuminate\Support\Facades\Auth;
 class FriendRequestController extends Controller
 {
 
+    /**
+     * Funcion que busca los usuarios disponibles en la base de datos
+     * @param mixed $input
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function searchUsers($input)
     {
 
@@ -30,6 +36,11 @@ class FriendRequestController extends Controller
         return response()->json('No se han encontrado usuarios', 500);
     }
 
+    /**
+     * Funcion que envia una solicitud de amistad a un usuario
+     * @param Request $request -> id usuario destinatario
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function send(Request $request)
     {
         $userReiver =  User::findOrFail((int)$request->data['id']);
@@ -43,10 +54,13 @@ class FriendRequestController extends Controller
             'source_user_id' => Auth::id(),
             'target_user_id' => $userReiver->id,
             'type' => 'friend_request',
-            'message' => '¡' . $userReiver->username . " quiere ser tu amigo!",
+            'message' => '¡' . Auth::user()->username . " quiere ser tu amigo!",
         ]);
 
-        broadcast(new FriendRequestEvent($friendRequest->senderUser, $userReiver->id))->toOthers();
+        broadcast(new FriendRequestEvent(
+            '¡Nueva solicitud de amistad de ' . $friendRequest->senderUser->username . '!',
+            $userReiver->id
+        ))->toOthers();
 
         return response()->json('Solicitud de amistad entregada', 200);
     }

@@ -15,15 +15,15 @@ class FriendRequestEvent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $userSender;
+    public $message;
     public $receiverId;
 
     /**
      * Create a new event instance.
      */
-    public function __construct($userSender, $receiverId)
+    public function __construct($message, $receiverId)
     {
-        $this->userSender = $userSender;
+        $this->message = $message;
         $this->receiverId = $receiverId;
     }
 

@@ -11,10 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('friend_requests', function (Blueprint $table) {
+        Schema::create('friends', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('user_id_send_request');
-            $table->bigInteger('user_id_receive_request');
+            $table->integer('first_user_id');
+            $table->string('first_user_username');
+            $table->integer('second_user_id');
+            $table->string('second_user_username');
             $table->timestamps();
         });
     }
@@ -24,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('friend_requests');
+        Schema::dropIfExists('friends');
     }
 };
