@@ -48,6 +48,10 @@ class FriendsController extends Controller
         }
     }
 
+    /**
+     * Funcion que recoge los amigos de el usuario autenticado
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function getFriends()
     {
 
@@ -58,6 +62,11 @@ class FriendsController extends Controller
         return response()->json($friends, 200);
     }
 
+    /**
+     * Funcion que elimna un amigo para nuestro usuario autenticado
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function deleteFriend(Request $request)
     {
         $idFriend = (int)$request->idFriend;
@@ -70,7 +79,7 @@ class FriendsController extends Controller
             return response()->json($usernameFriend . ' ya no es tu amigo :(', 200);
         } catch (Exception $e) {
             DB::rollBack();
-            return response()->json('No se ha podido aceptar la solicitud de seguimiento', 500);
+            return response()->json('No se ha podido eliminar el amigo ' . $usernameFriend, 500);
         }
     }
 }
