@@ -10,7 +10,6 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class FriendsController extends Controller
 {
@@ -44,7 +43,6 @@ class FriendsController extends Controller
             DB::commit();
             return response()->json('¡' . $alert->sourceUser->username . ' ya es tu amigo!', 200);
         } catch (Exception $e) {
-            Log::error($e->getMessage());
             DB::rollBack();
             return response()->json('No se ha podido aceptar la solicitud de seguimiento', 500);
         }
@@ -58,5 +56,21 @@ class FriendsController extends Controller
             ->toArray();
 
         return response()->json($friends, 200);
+    }
+
+    public function deleteFriend(Request $request)
+    {
+        $idFriend = (int)$request->idFriend;
+        $usernameFriend = $request->usernameFriend;
+
+        DB::beginTransaction();
+        try {
+            Friend::where('second_user_id', Auth::id())->where('first_user_id', $idFriend)->firstOrFail()->delete();
+            DB::commit();
+            return response()->json($usernameFriend . ' ya no es tu amigo :(', 200);
+        } catch (Exception $e) {
+            DB::rollBack();
+            return response()->json('No se ha podido aceptar la solicitud de seguimiento', 500);
+        }
     }
 }
