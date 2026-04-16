@@ -56,9 +56,24 @@ class FriendsController extends Controller
     {
 
         $friends = Friend::where('second_user_id', Auth::id())
-            ->get(['first_user_id', 'first_user_username'])
-            ->toArray();
-
+            ->orWhere('first_user_id', Auth::id())
+            ->get([
+                'first_user_id',
+                'first_user_username',
+                'second_user_id',
+                'second_user_username'
+            ])
+            ->map(function ($friend) {
+                return $friend->first_user_id == Auth::id()
+                    ? [
+                        'id' => $friend->second_user_id,
+                        'username' => $friend->second_user_username,
+                    ]
+                    : [
+                        'id' => $friend->first_user_id,
+                        'username' => $friend->first_user_username,
+                    ];
+            })->all();
         return response()->json($friends, 200);
     }
 
@@ -74,7 +89,13 @@ class FriendsController extends Controller
 
         DB::beginTransaction();
         try {
-            Friend::where('second_user_id', Auth::id())->where('first_user_id', $idFriend)->firstOrFail()->delete();
+            Friend::where(function ($q) use ($idFriend) {
+                $q->where('first_user_id', Auth::id())
+                    ->where('second_user_id', $idFriend);
+            })->orWhere(function ($q) use ($idFriend) {
+                $q->where('first_user_id', $idFriend)
+                    ->where('second_user_id', Auth::id());
+            })->firstOrFail()->delete();
             DB::commit();
             return response()->json($usernameFriend . ' ya no es tu amigo :(', 200);
         } catch (Exception $e) {

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Friends;
 
 use App\Http\Controllers\Controller;
 use App\Events\FriendRequestEvent;
+use App\Models\Friend;
 use App\Models\FriendRequest;
 use App\Models\User;
 use App\Models\UserAlert;
@@ -20,14 +21,32 @@ class FriendRequestController extends Controller
      */
     public function searchUsers($input)
     {
+        $idsExcludes = [];
 
-        $idsExcludes = FriendRequest::where('user_id_send_request', Auth::id())->get()->pluck('user_id_receive_request');
+        // * Para evitar que el REMITENTE pueda buscar a un DESTINATARIO con solicitud enviada
+        $idsExcludes = array_merge($idsExcludes, FriendRequest::where('user_id_send_request', Auth::id())->get()->pluck('user_id_receive_request')->toArray());
+        // * Para evitar que el DESTINATARIO pueda buscar a un REMITENTE con solicitud enviada
+        $idsExcludes = array_merge($idsExcludes, FriendRequest::where('user_id_receive_request', Auth::id())->get()->pluck('user_id_send_request')->toArray());
+
+        $friendsExludes = Friend::where('first_user_id', Auth::id())
+            ->orWhere('second_user_id', Auth::id())
+            ->get()
+            ->map(
+                fn($friend) => $friend->first_user_id == Auth::id()
+                    ? $friend->second_user_id
+                    : $friend->first_user_id
+            )
+            ->unique()
+            ->values()
+            ->toArray();
+        $idsExcludes = array_merge($idsExcludes, $friendsExludes);
 
         $input = '%' . $input . '%';
 
         $users = User::where('username', 'like', $input)
-            ->whereNot('id', Auth::id())
-            ->whereNotIn('id', $idsExcludes)->take(10)->orderBy('username', 'asc')->get();
+            ->whereNot('id', Auth::id()) // Para no salir el usaurio autenticado en la lista
+            ->whereNotIn('id', $idsExcludes)
+            ->take(10)->orderBy('username', 'asc')->get();
 
         if (!empty($users)) {
             return response()->json($users, 200);
