@@ -64,4 +64,20 @@ class FriendRequestController extends Controller
 
         return response()->json('Solicitud de amistad entregada', 200);
     }
+
+    /**
+     * Funcion que elimina la solicitud de amistad si no queremos que pertenezca a nuestra lista de amigos
+     * @param Request $request (Object UserAlert)
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function declineFriendRequest(Request $request)
+    {
+        $alert =  $request->alert;
+
+        UserAlert::findOrFail($alert['id'])->delete();
+
+        FriendRequest::where('user_id_send_request', $alert['source_user_id'])->first()->delete();
+
+        return response()->json('Alerta eliminada con exito');
+    }
 }
