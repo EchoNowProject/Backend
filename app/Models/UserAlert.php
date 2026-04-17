@@ -14,6 +14,8 @@ class UserAlert extends BaseUserAlert
 		'message'
 	];
 
+	protected $primaryKey = 'id';
+
 	public function sourceUser(): HasOne
 	{
 		return $this->hasOne(User::class, 'id', 'source_user_id');
