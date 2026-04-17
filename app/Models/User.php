@@ -2,47 +2,99 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
+use App\Models\Base\User as BaseUser;
+use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Support\Facades\Storage;
 
-class User extends Authenticatable
+class User extends BaseUser
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+	const IMAGEUSERPATH = "/users/";
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
-    protected $fillable = [
-        'name',
-        'email',
-        'password',
-    ];
+	protected $hidden = [
+		'password'
+	];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
+	protected $fillable = [
+		'username',
+		'email',
+		'display_name',
+		'biography',
+		'telephone_number',
+		'prefix_telephone_number',
+		'avatar_img',
+		'status',
+		'plan',
+		'password'
+	];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
-    }
+	protected $appends = ['file_avatar_image'];
+
+	/* ---------- Relationships ---------- */
+
+
+	//Devuelve el stado del usuario
+	public function statusUser()
+	{
+		return $this->hasOne(StatusUser::class, 'id', 'status');
+	}
+
+	// Retorna el plan elejido del usuario
+	public function plan()
+	{
+		return $this->hasOne(PlanUser::class, 'id', 'plan');
+	}
+	public function generalSettings()
+	{
+		return $this->hasOne(UserSetting::class, 'user_id', 'id');
+	}
+
+	/* ---------- Atributos ---------- */
+
+	// https://stackoverflow.com/questions/3967515/how-to-convert-an-image-to-base64-encoding
+	protected function fileAvatarImage(): Attribute
+	{
+		return Attribute::make(
+			get: function () {
+				if (!$this->avatar_img) {
+					return null;
+				}
+
+				$path = Storage::disk('public')->path(self::IMAGEUSERPATH . $this->avatar_img);
+
+				if (!file_exists($path)) {
+					return null;
+				}
+
+				$type = pathinfo($path, PATHINFO_EXTENSION);
+				$data = file_get_contents($path);
+
+				return [
+					'base64' => base64_encode($data),
+					'mime_type' => $type,
+				];
+			}
+		);
+	}
+
+
+	/**
+	 * Funcion de validacion para la creacion
+	 * @deprecated
+	 */
+	/* public static function boot()
+	{
+		parent::boot();
+
+		static::saving(function ($user) {
+			$usuario = static::where('username', $user->username)->first();
+			$email = static::where('email', $user->email)->first();
+
+			if ($usuario) {
+				throw new Exception("El nombre de usuario ya esta siendo utilizado");
+			}
+			if ($email) {
+				throw new Exception("El correo electronico ya esta siendo utilizado");
+			}
+		});
+	} */
 }
