@@ -28,4 +28,4 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT }}
-          script: cd /var/www/Backend && sudo systemctl restart nginx
+          script: cd /var/www/Backend && sudo systemctl restart apache2
