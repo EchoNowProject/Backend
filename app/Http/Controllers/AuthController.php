@@ -29,7 +29,7 @@ class AuthController extends Controller
         ])->validate();
 
         if (! $token = Auth::attempt($credenciales)) {
-            return response()->json(['error' => 'Unauthorized'], 401);
+            return response()->json('Usuario o contraseña incorrectos', 401);
         }
 
 
