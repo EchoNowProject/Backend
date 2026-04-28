@@ -7,6 +7,7 @@ use App\Actions\Images\DeleteImage;
 use App\Actions\Images\UpdateImage;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreUserRequest;
+use App\Models\ConversationParticipant;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
@@ -110,7 +111,12 @@ class UserController extends Controller
         $deleteImage = new DeleteImage();
         if ($deleteImage->delete($path)) {
             DB::beginTransaction();
+            /* Elimina solamente la foto del usuario */
             $user->update(['avatar_img' => null]);
+
+            /* Elimina tambien las referencias a las conversaciones */
+            ConversationParticipant::where('user_id', $user->id)->update(['avatar_image' => null]);
+
             DB::commit();
 
             return response()->json($user->load('generalSettings'), 200);
@@ -141,7 +147,12 @@ class UserController extends Controller
         $imageUpload = $updateImage->update($base64, self::IMAGEUSERPATH . $newName);
 
         DB::beginTransaction();
+        /* Actualiza unicamente el Usuario */
         $user->update(['avatar_img' => $newName . '.' . $imageUpload['extension']]); // Saca la extension de la foto
+
+        /* Actualiza la referencia de las conversaciones */
+        ConversationParticipant::where('user_id', $user->id)->update(['avatar_image' => $newName . '.' . $imageUpload['extension']]);
+
         DB::commit();
 
         if ($imageUpload['success']) {
