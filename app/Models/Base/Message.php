@@ -16,7 +16,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $conversation_id
  * @property int $user_sender_id
  * @property string $content
- * @property int $type_msg
+ * @property int|null $type_msg
  * @property string|null $file
  * @property string|null $read_by
  * @property Carbon|null $created_at

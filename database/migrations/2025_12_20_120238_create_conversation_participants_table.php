@@ -15,7 +15,9 @@ return new class extends Migration
             $table->id();
             $table->integer('conversation_id');
             $table->integer('user_id');
-            $table->integer('participant_role');
+            $table->integer('participant_role')->nullable();
+            $table->timestamp('last_read_at')->nullable();
+            $table->string('avatar_image')->nullable();
             $table->timestamp('joined_at');
         });
     }

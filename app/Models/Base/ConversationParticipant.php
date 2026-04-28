@@ -15,8 +15,10 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $id
  * @property int $conversation_id
  * @property int $user_id
- * @property int $participant_role
+ * @property int|null $participant_role
  * @property Carbon $joined_at
+ * @property Carbon|null $last_read_at
+ * @property string|null $avatar_image
  *
  * @package App\Models\Base
  */
@@ -29,6 +31,7 @@ class ConversationParticipant extends Model
 		'conversation_id' => 'int',
 		'user_id' => 'int',
 		'participant_role' => 'int',
-		'joined_at' => 'datetime'
+		'joined_at' => 'datetime',
+		'last_read_at' => 'datetime'
 	];
 }
