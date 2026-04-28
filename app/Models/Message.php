@@ -23,9 +23,12 @@ class Message extends BaseMessage
 	{
 		return Attribute::make(
 			get: function () {
+				$day = str(Carbon::parse($this->created_at)->day);
+				$month = str(Carbon::parse($this->created_at)->month);
+				$year = str(Carbon::parse($this->created_at)->year);
 				$hour = str(Carbon::parse($this->created_at)->hour);
 				$minutes = str(Carbon::parse($this->created_at)->minute);
-				return $hour . ':' . $minutes;
+				return $hour . ':' . $minutes . ' ' . $day . '-' . $month . '-' . $year;
 			},
 		);
 	}
