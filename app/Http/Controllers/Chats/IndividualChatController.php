@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Chats;
 
+use App\Events\IndividualChatEvent;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Conversation;
@@ -10,7 +11,6 @@ use App\Models\Message;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 
 class IndividualChatController extends Controller
 {
@@ -56,18 +56,19 @@ class IndividualChatController extends Controller
             'content' => $request->data['message'],
         ]);
 
+        // Se lanza evento al websocket
+        broadcast(new IndividualChatEvent($message, $request->data['friendId']))->toOthers();
 
         return response()->json($message, 200);
     }
 
     public function getUserMessages()
     {
-        // Recoger el user 1 y el user 2 para poner la foto y no llamar a la relacion de messages
-
         $conversationParticipants = ConversationParticipant::where('user_id', Auth::id())
             ->with('conversation.messages')
             ->first();
 
+        //Recogemos el usuario implicado en la relacion
         $userInvolved = ConversationParticipant::where('conversation_id', $conversationParticipants->conversation_id)->whereNot('user_id', Auth::id())->first();
 
         //$usersInvolved = ConversationParticipant::where('conversation_id', $conversationParticipants->conversation_id)->whereNot('conversation_id', Auth::id())->with('user')->first()->pluck('user');

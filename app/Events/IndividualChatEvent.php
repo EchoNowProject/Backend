@@ -9,21 +9,18 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-// ! Si no se pone el ShouldBroadcast no funcionará
-class FriendRequestEvent implements ShouldBroadcast
+class IndividualChatEvent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
-
     public $message;
-    public $receiverId;
-
+    public $targetUser;
     /**
      * Create a new event instance.
      */
-    public function __construct($message, $receiverId)
+    public function __construct($message, $targetUser)
     {
         $this->message = $message;
-        $this->receiverId = $receiverId;
+        $this->targetUser = $targetUser;
     }
 
     /**
@@ -33,11 +30,11 @@ class FriendRequestEvent implements ShouldBroadcast
      */
     public function broadcastOn(): Channel
     {
-        return new PrivateChannel('friend-request.' . $this->receiverId);
+        return new PrivateChannel('individual-chat.'. $this->targetUser);
     }
 
     public function broadcastAs()
     {
-        return 'friend-request';
+        return 'individual-chat';
     }
 }
