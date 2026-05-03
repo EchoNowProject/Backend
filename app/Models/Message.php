@@ -8,33 +8,47 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class Message extends BaseMessage
 {
-	protected $fillable = [
-		'conversation_id',
-		'user_sender_id',
-		'content',
-		'type_msg',
-		'file',
-		'read_by'
-	];
+    protected $fillable = [
+        'conversation_id',
+        'user_sender_id',
+        'content',
+        'type_msg',
+        'has_file',
+        'read_by',
+    ];
 
-	protected $appends = ['shipping_time'];
+    protected $appends = ['shipping_time'];
 
-	protected function shippingTime(): Attribute
-	{
-		return Attribute::make(
-			get: function () {
-				$day = str(Carbon::parse($this->created_at)->day);
-				$month = str(Carbon::parse($this->created_at)->month);
-				$year = str(Carbon::parse($this->created_at)->year);
-				$hour = str(Carbon::parse($this->created_at)->hour);
-				$minutes = str(Carbon::parse($this->created_at)->minute);
-				return $hour . ':' . $minutes . ' ' . $day . '-' . $month . '-' . $year;
-			},
-		);
-	}
+    protected function shippingTime(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                $day = str(Carbon::parse($this->created_at)->day);
+                $month = str(Carbon::parse($this->created_at)->month);
+                $year = str(Carbon::parse($this->created_at)->year);
+                $hour = str(Carbon::parse($this->created_at)->hour);
+                $minutes = str(Carbon::parse($this->created_at)->minute);
 
-	public function user()
-	{
-		return $this->hasOne(User::class, 'id', 'user_sender_id');
-	}
+                return $hour . ':' . $minutes . ' ' . $day . '-' . $month . '-' . $year;
+            },
+        );
+    }
+
+    public function user()
+    {
+        return $this->hasOne(User::class, 'id', 'user_sender_id');
+    }
+
+    // Funciones Extra
+
+    public static function setTypeMessage(?string $message, ?array $files)
+    {
+        if ($message != null && $files != null) {
+            return 3;
+        } elseif ($files != null) {
+            return 2;
+        } elseif ($message) {
+            return 1;
+        }
+    }
 }
