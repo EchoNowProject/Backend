@@ -71,6 +71,9 @@ class IndividualChatController extends Controller
                     ]);
 
             }
+
+            // Cargamos la relación para que el frontend reciba los archivos adjuntos
+            $message->load('filesMessage');
         }
 
         // Se lanza evento al websocket
