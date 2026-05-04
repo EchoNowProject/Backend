@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Model;
  * 
  * @property int $id
  * @property int $message_id
+ * @property string|null $file_name
  * @property string $path_file
  *
  * @package App\Models\Base

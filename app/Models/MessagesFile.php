@@ -8,6 +8,7 @@ class MessagesFile extends BaseMessagesFile
 {
 	protected $fillable = [
 		'message_id',
-		'path_file'
+		'file_name',
+		'path_file',
 	];
 }

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Chats;
 
-use App\Actions\Images\UpdateImage;
+use App\Actions\Files\UpdateFile;
 use App\Events\IndividualChatEvent;
 use App\Http\Controllers\Controller;
 use App\Models\Conversation;
@@ -13,7 +13,6 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Str;
 
 class IndividualChatController extends Controller
 {
@@ -61,13 +60,17 @@ class IndividualChatController extends Controller
         ]);
 
         if ($request->data['files'] != null) {
-            $this->uploadFiles($request->data['files'], $conversation->id);
+            $fileSaved = $this->uploadFiles($request->data['files'], $conversation->id);
 
-            //! Recoger el path de lo que nos retorne el upload
-            /* MessagesFile::create([
-                'message_id' =>,
-                'path_file' =>,
-            ]); */
+            foreach ($fileSaved as $file) {
+                if ($file['success'] == true)
+                    MessagesFile::create([
+                        'message_id' => $message->id,
+                        'file_name' => $file['file_name'],
+                        'path_file' => $file['path'],
+                    ]);
+
+            }
         }
 
         // Se lanza evento al websocket
@@ -83,7 +86,7 @@ class IndividualChatController extends Controller
     public function getUserMessages()
     {
         $conversationParticipants = ConversationParticipant::where('user_id', Auth::id())
-            ->with('conversation.messages')
+            ->with('conversation.messages.filesMessage')
             ->first();
 
         // Recogemos el usuario implicado en la relacion
@@ -99,15 +102,17 @@ class IndividualChatController extends Controller
 
     //-----------------------------Funciones privadas-----------------------------
 
-    private function uploadFiles(array $files, int $conversationId)
+    private function uploadFiles(array $files, int $conversationId): array
     {
-        //! cambiar el update imagen para que soporte cualquier tipo de archivo
-        //! que se pueda poner el nombre que venga por defecto
-        //! Que retorne donde esta guardada el archivo
-        foreach ($files as $fileBase64) {
-            $action = new UpdateImage();
-            $newName = Str::random(22);
-            $action->update($fileBase64, "/messages/$conversationId/" . $newName);
+        $filesSaved = [];
+
+        foreach ($files as $file) {
+            $action = new UpdateFile();
+            $fileData = $action->update($file['base64'], "/messages/$conversationId/", $file['name']);
+
+            array_push($filesSaved, $fileData);
         }
+
+        return $filesSaved;
     }
 }

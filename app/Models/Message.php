@@ -34,13 +34,20 @@ class Message extends BaseMessage
         );
     }
 
+
+    // --------------------------------- RelationShips ---------------------------------
     public function user()
     {
         return $this->hasOne(User::class, 'id', 'user_sender_id');
     }
 
-    // Funciones Extra
+    public function filesMessage()
+    {
+        return $this->hasMany(MessagesFile::class, 'message_id', 'id');
+    }
 
+
+    // --------------------------------- Funciones Extra ---------------------------------
     public static function setTypeMessage(?string $message, ?array $files)
     {
         if ($message != null && $files != null) {
