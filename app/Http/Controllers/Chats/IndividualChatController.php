@@ -45,6 +45,7 @@ class IndividualChatController extends Controller
                 ConversationParticipant::create([
                     'conversation_id' => $conversation->id,
                     'user_id' => $idParticipant,
+                    'username' => $user->username,
                     'joined_at' => Carbon::now(),
                     'avatar_image' => $user->avatar_img ?? null,
                 ]);
