@@ -14,7 +14,8 @@ class ConversationParticipant extends BaseConversationParticipant
 	protected $fillable = [
 		'conversation_id',
 		'user_id',
-		'participant_role',
+		'username',
+		//'participant_role',
 		'joined_at',
 		'last_read_at',
 		'avatar_image',

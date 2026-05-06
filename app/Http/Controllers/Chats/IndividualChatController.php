@@ -16,6 +16,35 @@ use Illuminate\Support\Facades\Auth;
 
 class IndividualChatController extends Controller
 {
+
+    public function getIntividualChats()
+    {
+        $userId = Auth::id();
+
+        // Obtenemos los IDs de las conversaciones privadas en las que participa el usuario
+        $conversationIds = ConversationParticipant::where('user_id', $userId)
+            ->whereHas('conversation', function ($query) {
+                $query->where('type_conversation', 'private');
+            })
+            ->pluck('conversation_id');
+
+        // Obtenemos a los otros participantes de esas conversaciones
+        $otherParticipants = ConversationParticipant::whereIn('conversation_id', $conversationIds)
+            ->where('user_id', '!=', $userId)
+            ->get()
+            ->select('id', 'conversation_id', 'user_id', 'username')
+            ->keyBy('conversation_id');
+
+        $chats = [];
+
+        foreach ($conversationIds as $convId) {
+
+            $chats[] = $otherParticipants->get($convId);
+        }
+
+        return response()->json($chats, 200);
+    }
+
     public function sendMessage(Request $request)
     {
         // ! Comprobar que todavoa son amigos
@@ -45,6 +74,7 @@ class IndividualChatController extends Controller
                 ConversationParticipant::create([
                     'conversation_id' => $conversation->id,
                     'user_id' => $idParticipant,
+                    'username' => $user->username,
                     'joined_at' => Carbon::now(),
                     'avatar_image' => $user->avatar_img ?? null,
                 ]);
@@ -69,7 +99,6 @@ class IndividualChatController extends Controller
                         'file_name' => $file['file_name'],
                         'path_file' => $file['path'],
                     ]);
-
             }
 
             // Cargamos la relación para que el frontend reciba los archivos adjuntos
@@ -86,19 +115,41 @@ class IndividualChatController extends Controller
      * Funcion que recoge los mensajes anteriores en un chat individual
      * @return \Illuminate\Http\JsonResponse
      */
-    public function getUserMessages()
+    public function getUserMessages(Request $request)
     {
-        $conversationParticipants = ConversationParticipant::where('user_id', Auth::id())
-            ->with('conversation.messages.filesMessage')
+
+        $userTarget = $request->query('userTarget');
+
+        $conversation = Conversation::where('type_conversation', 'private')
+            ->whereHas('participants', function ($query) {
+                $query->where('user_id', Auth::id());
+            })
+            ->whereHas('participants', function ($query) use ($userTarget) {
+                $query->where('user_id', $userTarget);
+            })
+            ->with('messages.filesMessage')
             ->first();
 
-        // Recogemos el usuario implicado en la relacion
-        $userInvolved = ConversationParticipant::where('conversation_id', $conversationParticipants->conversation_id)->whereNot('user_id', Auth::id())->first();
+        if (!$conversation) {
+            $userTargetModel = User::find($userTarget);
 
-        // $usersInvolved = ConversationParticipant::where('conversation_id', $conversationParticipants->conversation_id)->whereNot('conversation_id', Auth::id())->with('user')->first()->pluck('user');
+            return response()->json([
+                'messages' => [],
+                'userInvolved' => $userTargetModel ? [
+                    'user_id' => $userTargetModel->id,
+                    'username' => $userTargetModel->username,
+                    'avatar_image' => $userTargetModel->avatar_img ?? null,
+                ] : null,
+            ], 200);
+        }
+
+        // Recogemos el usuario implicado en la relacion
+        $userInvolved = ConversationParticipant::where('conversation_id', $conversation->id)
+            ->where('user_id', $userTarget)
+            ->first();
 
         return response()->json([
-            'messages' => $conversationParticipants->conversation->messages,
+            'messages' => $conversation->messages,
             'userInvolved' => $userInvolved,
         ], 200);
     }
