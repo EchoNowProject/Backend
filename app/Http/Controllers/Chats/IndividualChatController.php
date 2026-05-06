@@ -16,6 +16,35 @@ use Illuminate\Support\Facades\Auth;
 
 class IndividualChatController extends Controller
 {
+
+    public function getIntividualChats()
+    {
+        $userId = Auth::id();
+
+        // Obtenemos los IDs de las conversaciones privadas en las que participa el usuario
+        $conversationIds = ConversationParticipant::where('user_id', $userId)
+            ->whereHas('conversation', function ($query) {
+                $query->where('type_conversation', 'private');
+            })
+            ->pluck('conversation_id');
+
+        // Obtenemos a los otros participantes de esas conversaciones
+        $otherParticipants = ConversationParticipant::whereIn('conversation_id', $conversationIds)
+            ->where('user_id', '!=', $userId)
+            ->get()
+            ->select('id', 'conversation_id', 'user_id', 'username')
+            ->keyBy('conversation_id');
+
+        $chats = [];
+
+        foreach ($conversationIds as $convId) {
+
+            $chats[] = $otherParticipants->get($convId);
+        }
+
+        return response()->json($chats, 200);
+    }
+
     public function sendMessage(Request $request)
     {
         // ! Comprobar que todavoa son amigos
