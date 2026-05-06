@@ -13,7 +13,6 @@ use Illuminate\Database\Eloquent\Model;
  * Class Conversation
  * 
  * @property int $id
- * @property int $channel_id
  * @property string $type_conversation
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -23,8 +22,4 @@ use Illuminate\Database\Eloquent\Model;
 class Conversation extends Model
 {
 	protected $table = 'conversations';
-
-	protected $casts = [
-		'channel_id' => 'int'
-	];
 }

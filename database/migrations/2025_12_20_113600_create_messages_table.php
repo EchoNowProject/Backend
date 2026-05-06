@@ -15,9 +15,9 @@ return new class extends Migration
             $table->id();
             $table->integer('conversation_id');
             $table->integer('user_sender_id');
-            $table->text('content');
+            $table->text('content')->nullable();
             $table->integer('type_msg');
-            $table->string('file')->nullable();
+            $table->boolean('has_file')->default(false);
             $table->json('read_by')->nullable();
             $table->timestamps();
         });

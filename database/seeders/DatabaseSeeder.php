@@ -14,19 +14,22 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
 
-        //factories
+        // factories
         User::factory(50)->create();
 
-        //Seeders
+        // Seeders
         $this->call([
+
+            // Users
             StatusUserSeeder::class,
             UserSeeder::class,
             UserSettingsSeeder::class,
             UserNotificationsSettingsSeeder::class,
             UserPrivacySettingSeedeer::class,
+
+            // Types of messages
+            TypeMessageSeeder::class,
         ]);
-
-
 
         /* Examples */
         /* User::factory()->create([

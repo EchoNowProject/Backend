@@ -15,9 +15,9 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $id
  * @property int $conversation_id
  * @property int $user_sender_id
- * @property string $content
+ * @property string|null $content
  * @property int $type_msg
- * @property string|null $file
+ * @property bool $has_file
  * @property string|null $read_by
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -31,6 +31,7 @@ class Message extends Model
 	protected $casts = [
 		'conversation_id' => 'int',
 		'user_sender_id' => 'int',
-		'type_msg' => 'int'
+		'type_msg' => 'int',
+		'has_file' => 'bool'
 	];
 }
