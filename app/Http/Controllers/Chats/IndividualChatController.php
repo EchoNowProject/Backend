@@ -59,28 +59,6 @@ class IndividualChatController extends Controller
             })
             ->first();
 
-        if (!$conversation) {
-
-            $participants = [Auth::id(), $request->data['friendId']];
-
-            $conversation = Conversation::create([
-                'type_conversation' => 'private',
-            ]);
-
-            foreach ($participants as $idParticipant) {
-
-                $user = User::findOrFail($idParticipant);
-
-                ConversationParticipant::create([
-                    'conversation_id' => $conversation->id,
-                    'user_id' => $idParticipant,
-                    'username' => $user->username,
-                    'joined_at' => Carbon::now(),
-                    'avatar_image' => $user->avatar_img ?? null,
-                ]);
-            }
-        }
-
         $message = Message::create([
             'conversation_id' => $conversation->id,
             'user_sender_id' => Auth::id(),
@@ -152,6 +130,42 @@ class IndividualChatController extends Controller
             'messages' => $conversation->messages,
             'userInvolved' => $userInvolved,
         ], 200);
+    }
+
+    public function createConversationIfNeccesary(Request $request)
+    {
+        $conversation = Conversation::where('type_conversation', 'private')
+            ->whereHas('participants', function ($query) {
+                $query->where('user_id', Auth::id());
+            })
+            ->whereHas('participants', function ($query) use ($request) {
+                $query->where('user_id', $request->data['friendId']);
+            })
+            ->first();
+
+        if (!$conversation) {
+
+            $participants = [Auth::id(), $request->data['friendId']];
+
+            $conversation = Conversation::create([
+                'type_conversation' => 'private',
+            ]);
+
+            foreach ($participants as $idParticipant) {
+
+                $user = User::findOrFail($idParticipant);
+
+                ConversationParticipant::create([
+                    'conversation_id' => $conversation->id,
+                    'user_id' => $idParticipant,
+                    'username' => $user->username,
+                    'joined_at' => Carbon::now(),
+                    'avatar_image' => $user->avatar_img ?? null,
+                ]);
+            }
+        }
+
+        return $conversation;
     }
 
     //-----------------------------Funciones privadas-----------------------------
