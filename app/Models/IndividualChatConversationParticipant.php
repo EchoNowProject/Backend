@@ -2,11 +2,11 @@
 
 namespace App\Models;
 
-use App\Models\Base\ConversationParticipant as BaseConversationParticipant;
+use App\Models\Base\IndividualChatConversationParticipant as BaseIndividualChatConversationParticipant;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Support\Facades\Storage;
 
-class ConversationParticipant extends BaseConversationParticipant
+class IndividualChatConversationParticipant extends BaseIndividualChatConversationParticipant
 {
 
 	const IMAGEUSERPATH = "/users/";
@@ -26,7 +26,7 @@ class ConversationParticipant extends BaseConversationParticipant
 	/* ------------------------- RelationShips ------------------------- */
 	public function conversation()
 	{
-		return $this->hasOne(Conversation::class, 'id', 'conversation_id');
+		return $this->hasOne(IndividualChatConversation::class, 'id', 'conversation_id');
 	}
 
 	public function user()

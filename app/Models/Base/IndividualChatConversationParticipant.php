@@ -10,7 +10,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Class ConversationParticipant
+ * Class IndividualChatConversationParticipant
  * 
  * @property int $id
  * @property int $conversation_id
@@ -22,9 +22,9 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @package App\Models\Base
  */
-class ConversationParticipant extends Model
+class IndividualChatConversationParticipant extends Model
 {
-	protected $table = 'conversation_participants';
+	protected $table = 'individual_chat_conversation_participants';
 	public $timestamps = false;
 
 	protected $casts = [

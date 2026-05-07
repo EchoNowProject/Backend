@@ -9,7 +9,7 @@ namespace App\Models\Base;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Class MessagesFile
+ * Class IndividualChatMessagesFile
  * 
  * @property int $id
  * @property int $message_id
@@ -18,9 +18,9 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @package App\Models\Base
  */
-class MessagesFile extends Model
+class IndividualChatMessagesFile extends Model
 {
-	protected $table = 'messages_files';
+	protected $table = 'individual_chat_messages_files';
 	public $timestamps = false;
 
 	protected $casts = [

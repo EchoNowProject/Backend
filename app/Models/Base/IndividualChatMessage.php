@@ -10,7 +10,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Class Message
+ * Class IndividualChatMessage
  * 
  * @property int $id
  * @property int $conversation_id
@@ -24,9 +24,9 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @package App\Models\Base
  */
-class Message extends Model
+class IndividualChatMessage extends Model
 {
-	protected $table = 'messages';
+	protected $table = 'individual_chat_messages';
 
 	protected $casts = [
 		'conversation_id' => 'int',
