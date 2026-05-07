@@ -5,10 +5,10 @@ namespace App\Http\Controllers\Chats;
 use App\Actions\Files\UpdateFile;
 use App\Events\IndividualChatEvent;
 use App\Http\Controllers\Controller;
-use App\Models\Conversation;
-use App\Models\ConversationParticipant;
-use App\Models\Message;
-use App\Models\MessagesFile;
+use App\Models\IndividualChatConversation;
+use App\Models\IndividualChatConversationParticipant;
+use App\Models\IndividualChatMessage;
+use App\Models\IndividualChatMessagesFile;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -22,14 +22,14 @@ class IndividualChatController extends Controller
         $userId = Auth::id();
 
         // Obtenemos los IDs de las conversaciones privadas en las que participa el usuario
-        $conversationIds = ConversationParticipant::where('user_id', $userId)
+        $conversationIds = IndividualChatConversationParticipant::where('user_id', $userId)
             ->whereHas('conversation', function ($query) {
                 $query->where('type_conversation', 'private');
             })
             ->pluck('conversation_id');
 
         // Obtenemos a los otros participantes de esas conversaciones
-        $otherParticipants = ConversationParticipant::whereIn('conversation_id', $conversationIds)
+        $otherParticipants = IndividualChatConversationParticipant::whereIn('conversation_id', $conversationIds)
             ->where('user_id', '!=', $userId)
             ->get()
             ->select('id', 'conversation_id', 'user_id', 'username')
@@ -50,7 +50,7 @@ class IndividualChatController extends Controller
         // ! Comprobar que todavoa son amigos
         // ! Terminar
 
-        $conversation = Conversation::where('type_conversation', 'private')
+        $conversation = IndividualChatConversation::where('type_conversation', 'private')
             ->whereHas('participants', function ($query) {
                 $query->where('user_id', Auth::id());
             })
@@ -59,12 +59,12 @@ class IndividualChatController extends Controller
             })
             ->first();
 
-        $message = Message::create([
+        $message = IndividualChatMessage::create([
             'conversation_id' => $conversation->id,
             'user_sender_id' => Auth::id(),
             'content' => $request->data['message'] ?? null,
             'has_file' => $request->data['files'] != null ? true : false,
-            'type_msg' => Message::setTypeMessage($request->data['message'], $request->data['files']),
+            'type_msg' => IndividualChatMessage::setTypeMessage($request->data['message'], $request->data['files']),
         ]);
 
         if ($request->data['files'] != null) {
@@ -72,7 +72,7 @@ class IndividualChatController extends Controller
 
             foreach ($fileSaved as $file) {
                 if ($file['success'] == true)
-                    MessagesFile::create([
+                    IndividualChatMessagesFile::create([
                         'message_id' => $message->id,
                         'file_name' => $file['file_name'],
                         'path_file' => $file['path'],
@@ -98,7 +98,7 @@ class IndividualChatController extends Controller
 
         $userTarget = $request->query('userTarget');
 
-        $conversation = Conversation::where('type_conversation', 'private')
+        $conversation = IndividualChatConversation::where('type_conversation', 'private')
             ->whereHas('participants', function ($query) {
                 $query->where('user_id', Auth::id());
             })
@@ -122,7 +122,7 @@ class IndividualChatController extends Controller
         }
 
         // Recogemos el usuario implicado en la relacion
-        $userInvolved = ConversationParticipant::where('conversation_id', $conversation->id)
+        $userInvolved = IndividualChatConversationParticipant::where('conversation_id', $conversation->id)
             ->where('user_id', $userTarget)
             ->first();
 
@@ -134,7 +134,7 @@ class IndividualChatController extends Controller
 
     public function createConversationIfNeccesary(Request $request)
     {
-        $conversation = Conversation::where('type_conversation', 'private')
+        $conversation = IndividualChatConversation::where('type_conversation', 'private')
             ->whereHas('participants', function ($query) {
                 $query->where('user_id', Auth::id());
             })
@@ -147,7 +147,7 @@ class IndividualChatController extends Controller
 
             $participants = [Auth::id(), $request->data['friendId']];
 
-            $conversation = Conversation::create([
+            $conversation = IndividualChatConversation::create([
                 'type_conversation' => 'private',
             ]);
 
@@ -155,7 +155,7 @@ class IndividualChatController extends Controller
 
                 $user = User::findOrFail($idParticipant);
 
-                ConversationParticipant::create([
+                IndividualChatConversationParticipant::create([
                     'conversation_id' => $conversation->id,
                     'user_id' => $idParticipant,
                     'username' => $user->username,

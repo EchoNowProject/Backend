@@ -10,7 +10,7 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('messages_files', function (Blueprint $table) {
+        Schema::create('individual_chat_messages_files', function (Blueprint $table) {
             $table->id();
             $table->integer('message_id');
             $table->string('file_name')->nullable();
@@ -23,6 +23,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('messages_files');
+        Schema::dropIfExists('individual_chat_messages_files');
     }
 };
