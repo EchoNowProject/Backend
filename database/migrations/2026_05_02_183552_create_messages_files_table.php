@@ -4,17 +4,17 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
     public function up(): void
     {
-        Schema::create('conversations', function (Blueprint $table) {
+        Schema::create('messages_files', function (Blueprint $table) {
             $table->id();
-            $table->enum('type_conversation', ['private', 'group']);
-            $table->timestamps();
+            $table->integer('message_id');
+            $table->string('file_name')->nullable();
+            $table->string('path_file');
         });
     }
 
@@ -23,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('conversations');
+        Schema::dropIfExists('messages_files');
     }
 };
