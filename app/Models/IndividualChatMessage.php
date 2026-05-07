@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\IndividualChatMessagesFile;
 use App\Models\Base\IndividualChatMessage as BaseIndividualChatMessage;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -44,7 +45,7 @@ class IndividualChatMessage extends BaseIndividualChatMessage
 
 	public function filesMessage()
 	{
-		return $this->hasMany(MessagesFile::class, 'message_id', 'id');
+		return $this->hasMany(IndividualChatMessagesFile::class, 'message_id', 'id');
 	}
 
 
