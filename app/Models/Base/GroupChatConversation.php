@@ -13,6 +13,9 @@ use Illuminate\Database\Eloquent\Model;
  * Class GroupChatConversation
  * 
  * @property int $id
+ * @property string $group_name
+ * @property string|null $description
+ * @property string|null $path_cover_image
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  *

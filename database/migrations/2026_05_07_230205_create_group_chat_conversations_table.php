@@ -12,6 +12,9 @@ return new class extends Migration {
     {
         Schema::create('group_chat_conversations', function (Blueprint $table) {
             $table->id();
+            $table->string('group_name');
+            $table->text('description')->nullable();
+            $table->string('path_cover_image')->nullable();
             $table->timestamps();
         });
     }
