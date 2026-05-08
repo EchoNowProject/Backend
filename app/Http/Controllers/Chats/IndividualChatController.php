@@ -50,14 +50,16 @@ class IndividualChatController extends Controller
         // ! Comprobar que todavoa son amigos
         // ! Terminar
 
-        $conversation = IndividualChatConversation::where('type_conversation', 'private')
+        $conversation = IndividualChatConversation::where('id', $request->data['conversationId'])
+            ->where('type_conversation', 'private')
             ->whereHas('participants', function ($query) {
                 $query->where('user_id', Auth::id());
             })
-            ->whereHas('participants', function ($query) use ($request) {
-                $query->where('user_id', $request->data['friendId']);
-            })
             ->first();
+
+        if (!$conversation) {
+            return response()->json(['message' => 'Conversation not found'], 404);
+        }
 
         $message = IndividualChatMessage::create([
             'conversation_id' => $conversation->id,
@@ -83,8 +85,13 @@ class IndividualChatController extends Controller
             $message->load('filesMessage');
         }
 
+        $friendId = IndividualChatConversationParticipant::where('conversation_id', $conversation->id)
+            ->where('user_id', '!=', Auth::id())
+            ->first()
+            ->user_id;
+
         // Se lanza evento al websocket
-        broadcast(new IndividualChatEvent($message, $request->data['friendId']))->toOthers();
+        broadcast(new IndividualChatEvent($message, $friendId))->toOthers();
 
         return response()->json($message, 200);
     }
@@ -96,34 +103,26 @@ class IndividualChatController extends Controller
     public function getUserMessages(Request $request)
     {
 
-        $userTarget = $request->query('userTarget');
+        $conversationId = $request->query('conversation_id');
 
-        $conversation = IndividualChatConversation::where('type_conversation', 'private')
+        $conversation = IndividualChatConversation::where('id', $conversationId)
+            ->where('type_conversation', 'private')
             ->whereHas('participants', function ($query) {
                 $query->where('user_id', Auth::id());
-            })
-            ->whereHas('participants', function ($query) use ($userTarget) {
-                $query->where('user_id', $userTarget);
             })
             ->with('messages.filesMessage')
             ->first();
 
         if (!$conversation) {
-            $userTargetModel = User::find($userTarget);
-
             return response()->json([
                 'messages' => [],
-                'userInvolved' => $userTargetModel ? [
-                    'user_id' => $userTargetModel->id,
-                    'username' => $userTargetModel->username,
-                    'avatar_image' => $userTargetModel->avatar_img ?? null,
-                ] : null,
-            ], 200);
+                'userInvolved' => null,
+            ], 404);
         }
 
         // Recogemos el usuario implicado en la relacion
         $userInvolved = IndividualChatConversationParticipant::where('conversation_id', $conversation->id)
-            ->where('user_id', $userTarget)
+            ->where('user_id', '!=', Auth::id())
             ->first();
 
         return response()->json([
@@ -165,7 +164,7 @@ class IndividualChatController extends Controller
             }
         }
 
-        return $conversation;
+        return response()->json($conversation, 200);
     }
 
     //-----------------------------Funciones privadas-----------------------------
