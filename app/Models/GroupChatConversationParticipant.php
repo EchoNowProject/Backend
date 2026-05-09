@@ -15,4 +15,9 @@ class GroupChatConversationParticipant extends BaseGroupChatConversationParticip
 		'avatar_image',
 		'joined_at'
 	];
+
+	public function conversation()
+	{
+		return $this->hasOne(GroupChatConversation::class, 'id', 'conversation_id');
+	}
 }

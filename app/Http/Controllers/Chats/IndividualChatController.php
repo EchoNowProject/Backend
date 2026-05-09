@@ -31,15 +31,17 @@ class IndividualChatController extends Controller
         // Obtenemos a los otros participantes de esas conversaciones
         $otherParticipants = IndividualChatConversationParticipant::whereIn('conversation_id', $conversationIds)
             ->where('user_id', '!=', $userId)
-            ->get()
             ->select('id', 'conversation_id', 'user_id', 'username')
+            ->get()
             ->keyBy('conversation_id');
 
         $chats = [];
 
         foreach ($conversationIds as $convId) {
-
-            $chats[] = $otherParticipants->get($convId);
+            $participant = $otherParticipants->get($convId);
+            if ($participant) {
+                $chats[] = $participant;
+            }
         }
 
         return response()->json($chats, 200);

@@ -7,7 +7,7 @@ use App\Actions\Images\DeleteImage;
 use App\Actions\Images\UpdateImage;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreUserRequest;
-use App\Models\ConversationParticipant;
+use App\Models\IndividualChatConversationParticipant;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
@@ -115,7 +115,7 @@ class UserController extends Controller
             $user->update(['avatar_img' => null]);
 
             /* Elimina tambien las referencias a las conversaciones */
-            ConversationParticipant::where('user_id', $user->id)->update(['avatar_image' => null]);
+            IndividualChatConversationParticipant::where('user_id', $user->id)->update(['avatar_image' => null]);
 
             DB::commit();
 
@@ -151,7 +151,7 @@ class UserController extends Controller
         $user->update(['avatar_img' => $newName . '.' . $imageUpload['extension']]); // Saca la extension de la foto
 
         /* Actualiza la referencia de las conversaciones */
-        ConversationParticipant::where('user_id', $user->id)->update(['avatar_image' => $newName . '.' . $imageUpload['extension']]);
+        IndividualChatConversationParticipant::where('user_id', $user->id)->update(['avatar_image' => $newName . '.' . $imageUpload['extension']]);
 
         DB::commit();
 

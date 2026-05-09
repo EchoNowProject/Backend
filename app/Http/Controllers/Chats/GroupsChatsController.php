@@ -18,30 +18,14 @@ class GroupsChatsController extends Controller
      */
     public function getGroupsChats()
     {
+
         $userId = Auth::id();
 
         // Obtenemos los IDs de las conversaciones privadas en las que participa el usuario
-        $conversationIds = GroupChatConversationParticipant::where('user_id', $userId)
-            ->whereHas('conversation', function ($query) {
-                $query->where('type_conversation', 'private');
-            })
-            ->pluck('conversation_id');
+        $conversations = GroupChatConversationParticipant::where('user_id', $userId)->with('conversation')->get()->pluck('conversation');
 
-        // Obtenemos a los otros participantes de esas conversaciones
-        $otherParticipants = GroupChatConversationParticipant::whereIn('conversation_id', $conversationIds)
-            ->whereNot('user_id', $userId)
-            ->get()
-            ->select('id', 'conversation_id', 'user_id', 'username')
-            ->keyBy('conversation_id');
 
-        $chats = [];
-
-        foreach ($conversationIds as $convId) {
-
-            $chats[] = $otherParticipants->get($convId);
-        }
-
-        return response()->json($chats, 200);
+        return response()->json($conversations, 200);
     }
 
     public function createConversationIfNeccesary(Request $request)
