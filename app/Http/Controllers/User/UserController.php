@@ -7,8 +7,11 @@ use App\Actions\Images\DeleteImage;
 use App\Actions\Images\UpdateImage;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreUserRequest;
+use App\Models\Friend;
+use App\Models\GroupChatConversationParticipant;
 use App\Models\IndividualChatConversationParticipant;
 use App\Models\User;
+use App\Models\UserAlert;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -78,6 +81,11 @@ class UserController extends Controller
                 'telephone_number' => $request->all()['telephone_number'] ?? null,
                 'prefix_telephone_number' => $request->all()['prefix_telephone_number'] ?? null,
             ]);
+
+            if (isset($request->all()['username'])) {
+                $this->updateUsernameReferences($user->id, $request->validated()['username']);
+            }
+
             DB::commit();
 
             return response()->json($user->load('generalSettings'), 200);
@@ -115,7 +123,7 @@ class UserController extends Controller
             $user->update(['avatar_img' => null]);
 
             /* Elimina tambien las referencias a las conversaciones */
-            IndividualChatConversationParticipant::where('user_id', $user->id)->update(['avatar_image' => null]);
+            $this->deleteImageReferences($user->id);
 
             DB::commit();
 
@@ -163,10 +171,7 @@ class UserController extends Controller
                 'avatar_img' => $fileName
             ]);
 
-            IndividualChatConversationParticipant::where('user_id', $user->id)
-                ->update([
-                    'avatar_image' => $fileName
-                ]);
+            $this->updateImageReferences((int) $user->id, $fileName);
 
             DB::commit();
 
@@ -183,5 +188,32 @@ class UserController extends Controller
                 'message' => $e->getMessage()
             ], 500);
         }
+    }
+
+    // ------------------------ Funciones privadas ------------------------
+
+    private function updateImageReferences(int $userId, string $fileName)
+    {
+        IndividualChatConversationParticipant::where('user_id', $userId)->update(['avatar_image' => $fileName]);
+        GroupChatConversationParticipant::here('user_id', $userId)->update(['avatar_image' => $fileName]);
+    }
+
+    private function deleteImageReferences(int $userId)
+    {
+        IndividualChatConversationParticipant::where('user_id', $userId)->update(['avatar_image' => null]);
+        GroupChatConversationParticipant::where('user_id', $userId)->update(['avatar_image' => null]);
+    }
+
+    private function updateUsernameReferences(int $userId, string $newUsername)
+    {
+        IndividualChatConversationParticipant::where('user_id', $userId)->update(['username' => $newUsername]);
+
+        GroupChatConversationParticipant::where('user_id', $userId)->update(['username' => $newUsername]);
+
+        Friend::where('first_user_id', $userId)->update(['first_user_username' => $newUsername]);
+        
+        Friend::where('second_user_id', $userId)->update(['second_user_username' => $newUsername]);
+
+        UserAlert::where('source_user_id', $userId)->where('type', 'friend_request')->update(['message' => '¡' . $newUsername . " quiere ser tu amigo!"]);
     }
 }

@@ -11,6 +11,7 @@ class GroupChatMessage extends BaseGroupChatMessage
 	protected $fillable = [
 		'conversation_id',
 		'user_sender_id',
+		'user_sender_name',
 		'content',
 		'type_msg',
 		'has_file',

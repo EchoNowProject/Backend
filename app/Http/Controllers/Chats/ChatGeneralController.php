@@ -111,6 +111,7 @@ class ChatGeneralController extends Controller
         $message = GroupChatMessage::create([
             'conversation_id' => $idConversation,
             'user_sender_id' => Auth::id(),
+            'user_sender_name' => Auth::user()->username,
             'content' => $request->data['message'] ?? null,
             'has_file' => $request->data['files'] != null ? true : false,
             'type_msg' => ChatActions::setTypeMessage($request->data['message'], $request->data['files']),

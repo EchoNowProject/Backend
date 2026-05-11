@@ -14,6 +14,7 @@ return new class extends Migration {
             $table->id();
             $table->integer('conversation_id');
             $table->integer('user_sender_id');
+            $table->string('user_sender_name');
             $table->text('content')->nullable();
             $table->integer('type_msg');
             $table->boolean('has_file')->default(false);

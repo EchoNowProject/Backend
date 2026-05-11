@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $id
  * @property int $conversation_id
  * @property int $user_sender_id
+ * @property string $user_sender_name
  * @property string|null $content
  * @property int $type_msg
  * @property bool $has_file
