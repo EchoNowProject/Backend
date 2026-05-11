@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Actions\Chats\ChatActions;
 use App\Models\IndividualChatMessagesFile;
 use App\Models\Base\IndividualChatMessage as BaseIndividualChatMessage;
 use Carbon\Carbon;
@@ -25,15 +26,7 @@ class IndividualChatMessage extends BaseIndividualChatMessage
 	protected function shippingTime(): Attribute
 	{
 		return Attribute::make(
-			get: function () {
-				$day = str(Carbon::parse($this->created_at)->day);
-				$month = str(Carbon::parse($this->created_at)->month);
-				$year = str(Carbon::parse($this->created_at)->year);
-				$hour = str(Carbon::parse($this->created_at)->hour);
-				$minutes = str(Carbon::parse($this->created_at)->minute);
-
-				return $hour . ':' . $minutes . ' ' . $day . '-' . $month . '-' . $year;
-			},
+			get: fn() => ChatActions::makeShippingTime($this->created_at),
 		);
 	}
 
@@ -48,16 +41,4 @@ class IndividualChatMessage extends BaseIndividualChatMessage
 		return $this->hasMany(IndividualChatMessagesFile::class, 'message_id', 'id');
 	}
 
-
-	// --------------------------------- Funciones Extra ---------------------------------
-	public static function setTypeMessage(?string $message, ?array $files)
-	{
-		if ($message != null && $files != null) {
-			return 3;
-		} elseif ($files != null) {
-			return 2;
-		} elseif ($message) {
-			return 1;
-		}
-	}
 }

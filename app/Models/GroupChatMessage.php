@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\Actions\Chats\ChatActions;
 use App\Models\Base\GroupChatMessage as BaseGroupChatMessage;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class GroupChatMessage extends BaseGroupChatMessage
 {
@@ -14,4 +16,26 @@ class GroupChatMessage extends BaseGroupChatMessage
 		'has_file',
 		'read_by'
 	];
+
+
+	protected $appends = ['shipping_time'];
+
+	protected function shippingTime(): Attribute
+	{
+		return Attribute::make(
+			get: fn() => ChatActions::makeShippingTime($this->created_at),
+		);
+	}
+
+	// --------------------------------- RelationShips ---------------------------------
+	public function user()
+	{
+		return $this->hasOne(User::class, 'id', 'user_sender_id');
+	}
+
+	public function filesMessage()
+	{
+		return $this->hasMany(GroupChatMessagesFile::class, 'message_id', 'id');
+	}
+
 }

@@ -28,6 +28,35 @@ class GroupsChatsController extends Controller
         return response()->json($conversations, 200);
     }
 
+    /**
+     * Funcion que carga los mensajes de un grupo con las refrencias de los archivos en caso de que contengan
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getGroupMessages(Request $request)
+    {
+
+        $conversationId = (int) $request->query('conversation_id');
+
+        $conversation = GroupChatConversation::where('id', $conversationId)
+            ->whereHas('participants', function ($query) {
+                $query->where('user_id', Auth::id());
+            })
+            ->with('messages.filesMessage')
+            ->first();
+
+        if (!$conversation) {
+            return response()->json([], 404);
+        }
+
+        return response()->json($conversation->messages, 200);
+    }
+
+    /**
+     * Funcion que crea una Conversacion para un grupo en caso de no tenerla
+     * @param Request $request
+     * @return GroupChatConversation|object
+     */
     public function createConversationIfNeccesary(Request $request)
     {
 
@@ -45,7 +74,6 @@ class GroupsChatsController extends Controller
 
             $conversation = GroupChatConversation::create([
                 'group_name' => $request->data['groupName'],
-                //'path_cover_image'
             ]);
 
             foreach ($participantsIds as $participantId) {
@@ -64,4 +92,6 @@ class GroupsChatsController extends Controller
 
         return $conversation;
     }
+
+
 }
