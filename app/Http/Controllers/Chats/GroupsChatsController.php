@@ -49,7 +49,7 @@ class GroupsChatsController extends Controller
             return response()->json([], 404);
         }
 
-        return response()->json($conversation->messages, 200);
+        return response()->json(['messages' => $conversation->messages, 'conversation' => $conversation], 200);
     }
 
     /**
