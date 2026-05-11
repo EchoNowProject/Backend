@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Chats;
 
 use App\Actions\Chats\ChatActions;
 use App\Actions\Files\UpdateFile;
+use App\Events\GroupChatEvent;
 use App\Events\IndividualChatEvent;
 use App\Http\Controllers\Controller;
 use App\Models\GroupChatConversationParticipant;
@@ -131,14 +132,8 @@ class ChatGeneralController extends Controller
             $message->load('filesMessage');
         }
 
-        $friendId = GroupChatConversationParticipant::where('conversation_id', $idConversation)
-            ->where('user_id', '!=', Auth::id())
-            ->first()
-            ->user_id;
-
         // Se lanza evento al websocket
-        //!crear una nuevo
-        //broadcast(new IndividualChatEvent($message, $friendId))->toOthers();
+        broadcast(new GroupChatEvent($message, $idConversation))->toOthers();
 
         return response()->json($message, 200);
     }
