@@ -7,8 +7,11 @@ use App\Actions\Images\DeleteImage;
 use App\Actions\Images\UpdateImage;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreUserRequest;
-use App\Models\ConversationParticipant;
+use App\Models\Friend;
+use App\Models\GroupChatConversationParticipant;
+use App\Models\IndividualChatConversationParticipant;
 use App\Models\User;
+use App\Models\UserAlert;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -78,6 +81,11 @@ class UserController extends Controller
                 'telephone_number' => $request->all()['telephone_number'] ?? null,
                 'prefix_telephone_number' => $request->all()['prefix_telephone_number'] ?? null,
             ]);
+
+            if (isset($request->all()['username'])) {
+                $this->updateUsernameReferences($user->id, $request->validated()['username']);
+            }
+
             DB::commit();
 
             return response()->json($user->load('generalSettings'), 200);
@@ -115,7 +123,7 @@ class UserController extends Controller
             $user->update(['avatar_img' => null]);
 
             /* Elimina tambien las referencias a las conversaciones */
-            ConversationParticipant::where('user_id', $user->id)->update(['avatar_image' => null]);
+            $this->deleteImageReferences($user->id);
 
             DB::commit();
 
@@ -131,37 +139,81 @@ class UserController extends Controller
      */
     public function updateUserImage(Request $request)
     {
-        $user = Auth::user();
-        $base64 = $request->base64;
+        try {
 
-        /* Si un usuario ya tiene foto y la quiere cambiar */
-        if ($user->avatar_img) {
-            $deleteImage = new DeleteImage();
-            $deleteImage->delete(self::IMAGEUSERPATH . $user->avatar_img);
-        }
+            $user = Auth::user();
+            $base64 = $request->base64;
 
-        $newName = Str::random(20);
+            // Eliminar imagen anterior
+            if ($user->avatar_img) {
+                $deleteImage = new DeleteImage();
+                $deleteImage->delete(self::IMAGEUSERPATH . $user->avatar_img);
+            }
 
-        // Subir la imagen
-        $updateImage = new UpdateImage();
-        $imageUpload = $updateImage->update($base64, self::IMAGEUSERPATH . $newName);
+            $newName = Str::random(20);
 
-        DB::beginTransaction();
-        /* Actualiza unicamente el Usuario */
-        $user->update(['avatar_img' => $newName . '.' . $imageUpload['extension']]); // Saca la extension de la foto
+            // Subir imagen
+            $updateImage = new UpdateImage();
+            $imageUpload = $updateImage->update($base64, self::IMAGEUSERPATH . $newName);
 
-        /* Actualiza la referencia de las conversaciones */
-        ConversationParticipant::where('user_id', $user->id)->update(['avatar_image' => $newName . '.' . $imageUpload['extension']]);
+            // VALIDAR ANTES DE USAR
+            if (!$imageUpload['success']) {
+                return response()->json([
+                    'message' => 'Error al subir la imagen'
+                ], 500);
+            }
 
-        DB::commit();
+            DB::beginTransaction();
 
-        if ($imageUpload['success']) {
+            $fileName = $newName . '.' . $imageUpload['extension'];
+
+            $user->update([
+                'avatar_img' => $fileName
+            ]);
+
+            $this->updateImageReferences((int) $user->id, $fileName);
+
+            DB::commit();
+
             return response()->json([
                 'avatar_img' => $user->avatar_img,
                 'fileImage' => $user->fileAvatarImage
             ], 200);
-        }
 
-        return response()->json('Error al añadir la nueva imagen', 500);
+        } catch (Exception $e) {
+
+            DB::rollBack();
+
+            return response()->json([
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    // ------------------------ Funciones privadas ------------------------
+
+    private function updateImageReferences(int $userId, string $fileName)
+    {
+        IndividualChatConversationParticipant::where('user_id', $userId)->update(['avatar_image' => $fileName]);
+        GroupChatConversationParticipant::here('user_id', $userId)->update(['avatar_image' => $fileName]);
+    }
+
+    private function deleteImageReferences(int $userId)
+    {
+        IndividualChatConversationParticipant::where('user_id', $userId)->update(['avatar_image' => null]);
+        GroupChatConversationParticipant::where('user_id', $userId)->update(['avatar_image' => null]);
+    }
+
+    private function updateUsernameReferences(int $userId, string $newUsername)
+    {
+        IndividualChatConversationParticipant::where('user_id', $userId)->update(['username' => $newUsername]);
+
+        GroupChatConversationParticipant::where('user_id', $userId)->update(['username' => $newUsername]);
+
+        Friend::where('first_user_id', $userId)->update(['first_user_username' => $newUsername]);
+        
+        Friend::where('second_user_id', $userId)->update(['second_user_username' => $newUsername]);
+
+        UserAlert::where('source_user_id', $userId)->where('type', 'friend_request')->update(['message' => '¡' . $newUsername . " quiere ser tu amigo!"]);
     }
 }

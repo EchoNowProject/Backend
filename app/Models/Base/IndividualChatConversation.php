@@ -10,7 +10,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Class Conversation
+ * Class IndividualChatConversation
  * 
  * @property int $id
  * @property string $type_conversation
@@ -19,7 +19,7 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @package App\Models\Base
  */
-class Conversation extends Model
+class IndividualChatConversation extends Model
 {
-	protected $table = 'conversations';
+	protected $table = 'individual_chat_conversations';
 }

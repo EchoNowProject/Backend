@@ -10,11 +10,12 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Class Message
+ * Class GroupChatMessage
  * 
  * @property int $id
  * @property int $conversation_id
  * @property int $user_sender_id
+ * @property string $user_sender_name
  * @property string|null $content
  * @property int $type_msg
  * @property bool $has_file
@@ -24,9 +25,9 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @package App\Models\Base
  */
-class Message extends Model
+class GroupChatMessage extends Model
 {
-	protected $table = 'messages';
+	protected $table = 'group_chat_messages';
 
 	protected $casts = [
 		'conversation_id' => 'int',

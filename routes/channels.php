@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\GroupChatConversation;
 use Illuminate\Support\Facades\Broadcast;
 
 Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
@@ -16,4 +17,17 @@ Broadcast::channel('friend-request.{id}', function ($user, $id) {
 
 Broadcast::channel('individual-chat.{id}', function ($user, $id) {
     return (int) $user->id === (int) $id;
+});
+
+Broadcast::channel('group-chat.{idConversation}', function ($user, $idConversation) {
+
+    $conversation = GroupChatConversation::find($idConversation);
+
+    if (!$conversation) {
+        return false;
+    }
+
+    return $conversation->participants()
+        ->where('users.id', $user->id)
+        ->exists();
 });
