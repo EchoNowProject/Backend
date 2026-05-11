@@ -10,11 +10,12 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('individual_chat_messages_files', function (Blueprint $table) {
+        Schema::create('group_chat_conversations', function (Blueprint $table) {
             $table->id();
-            $table->integer('message_id');
-            $table->string('file_name')->nullable();
-            $table->string('path_file');
+            $table->string('group_name');
+            $table->text('description')->nullable();
+            $table->string('path_cover_image')->nullable();
+            $table->timestamps();
         });
     }
 
@@ -23,6 +24,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('individual_chat_messages_files');
+        Schema::dropIfExists('group_chat_conversations');
     }
 };

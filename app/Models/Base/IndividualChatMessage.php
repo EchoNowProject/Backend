@@ -1,0 +1,37 @@
+<?php
+
+/**
+ * Created by Reliese Model.
+ */
+
+namespace App\Models\Base;
+
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Model;
+
+/**
+ * Class IndividualChatMessage
+ * 
+ * @property int $id
+ * @property int $conversation_id
+ * @property int $user_sender_id
+ * @property string|null $content
+ * @property int $type_msg
+ * @property bool $has_file
+ * @property string|null $read_by
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ *
+ * @package App\Models\Base
+ */
+class IndividualChatMessage extends Model
+{
+	protected $table = 'individual_chat_messages';
+
+	protected $casts = [
+		'conversation_id' => 'int',
+		'user_sender_id' => 'int',
+		'type_msg' => 'int',
+		'has_file' => 'bool'
+	];
+}
