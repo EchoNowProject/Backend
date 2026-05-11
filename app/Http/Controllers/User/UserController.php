@@ -131,37 +131,57 @@ class UserController extends Controller
      */
     public function updateUserImage(Request $request)
     {
-        $user = Auth::user();
-        $base64 = $request->base64;
+        try {
 
-        /* Si un usuario ya tiene foto y la quiere cambiar */
-        if ($user->avatar_img) {
-            $deleteImage = new DeleteImage();
-            $deleteImage->delete(self::IMAGEUSERPATH . $user->avatar_img);
-        }
+            $user = Auth::user();
+            $base64 = $request->base64;
 
-        $newName = Str::random(20);
+            // Eliminar imagen anterior
+            if ($user->avatar_img) {
+                $deleteImage = new DeleteImage();
+                $deleteImage->delete(self::IMAGEUSERPATH . $user->avatar_img);
+            }
 
-        // Subir la imagen
-        $updateImage = new UpdateImage();
-        $imageUpload = $updateImage->update($base64, self::IMAGEUSERPATH . $newName);
+            $newName = Str::random(20);
 
-        DB::beginTransaction();
-        /* Actualiza unicamente el Usuario */
-        $user->update(['avatar_img' => $newName . '.' . $imageUpload['extension']]); // Saca la extension de la foto
+            // Subir imagen
+            $updateImage = new UpdateImage();
+            $imageUpload = $updateImage->update($base64, self::IMAGEUSERPATH . $newName);
 
-        /* Actualiza la referencia de las conversaciones */
-        IndividualChatConversationParticipant::where('user_id', $user->id)->update(['avatar_image' => $newName . '.' . $imageUpload['extension']]);
+            // VALIDAR ANTES DE USAR
+            if (!$imageUpload['success']) {
+                return response()->json([
+                    'message' => 'Error al subir la imagen'
+                ], 500);
+            }
 
-        DB::commit();
+            DB::beginTransaction();
 
-        if ($imageUpload['success']) {
+            $fileName = $newName . '.' . $imageUpload['extension'];
+
+            $user->update([
+                'avatar_img' => $fileName
+            ]);
+
+            IndividualChatConversationParticipant::where('user_id', $user->id)
+                ->update([
+                    'avatar_image' => $fileName
+                ]);
+
+            DB::commit();
+
             return response()->json([
                 'avatar_img' => $user->avatar_img,
                 'fileImage' => $user->fileAvatarImage
             ], 200);
-        }
 
-        return response()->json('Error al añadir la nueva imagen', 500);
+        } catch (Exception $e) {
+
+            DB::rollBack();
+
+            return response()->json([
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
 }
