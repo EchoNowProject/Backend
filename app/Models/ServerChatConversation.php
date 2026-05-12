@@ -7,8 +7,8 @@ use App\Models\Base\ServerChatConversation as BaseServerChatConversation;
 class ServerChatConversation extends BaseServerChatConversation
 {
 	protected $fillable = [
-		'group_name',
+		'id_server',
+		'channel_text_name',
 		'description',
-		'path_cover_image'
 	];
 }

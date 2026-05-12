@@ -12,9 +12,9 @@ return new class extends Migration {
     {
         Schema::create('server_chat_conversations', function (Blueprint $table) {
             $table->id();
-            $table->string('group_name');
+            $table->integer('id_server');
+            $table->string('channel_text_name');
             $table->text('description')->nullable();
-            $table->string('path_cover_image')->nullable();
             $table->timestamps();
         });
     }

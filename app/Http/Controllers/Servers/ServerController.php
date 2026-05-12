@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Servers;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreServerRequest;
 use App\Models\Server;
+use App\Models\ServerChatConversation;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -34,18 +35,28 @@ class ServerController extends Controller
 
         try {
             $server = Server::create([
-                'name'        => $request->name,
+                'name' => $request->name,
                 'description' => $request->description ?? null,
-                'avatar_img'  => $request->avatar_img ?? null,
-                'owner_id'    => Auth::id(),
+                'avatar_img' => $request->avatar_img ?? null,
+                'owner_id' => Auth::id(),
                 'invitation_code' => 'echonow:' . Str::random(),
                 'type_server' => $request->type_server,
             ]);
+
+            //Se crea la conversacion principal para ese ServerChat
+            $serverConversation = ServerChatConversation::create([
+                'id_server' => $server->id,
+                'channel_text_name' => 'General',
+            ]);
+
             DB::commit();
+
             return response()->json([
                 'message' => 'Servidor creado correctamente',
                 'server' => $server,
+                'server_chat_conversation' => $serverConversation,
             ], 201);
+
         } catch (Exception $error) {
             DB::rollBack();
             return response()->json($error->getMessage(), 500);

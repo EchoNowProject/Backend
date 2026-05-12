@@ -13,9 +13,9 @@ use Illuminate\Database\Eloquent\Model;
  * Class ServerChatConversation
  * 
  * @property int $id
- * @property string $group_name
+ * @property int $id_server
+ * @property string $channel_text_name
  * @property string|null $description
- * @property string|null $path_cover_image
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  *
@@ -24,4 +24,8 @@ use Illuminate\Database\Eloquent\Model;
 class ServerChatConversation extends Model
 {
 	protected $table = 'server_chat_conversations';
+
+	protected $casts = [
+		'id_server' => 'int'
+	];
 }
