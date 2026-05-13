@@ -19,7 +19,7 @@ class ServerController extends Controller
      */
     public function index()
     {
-        return Server::where('owner_id', Auth::id())->get();
+        return Server::with('mainConversation')->where('owner_id', Auth::id())->get();
     }
 
     /**
@@ -47,6 +47,7 @@ class ServerController extends Controller
             $serverConversation = ServerChatConversation::create([
                 'id_server' => $server->id,
                 'channel_text_name' => 'General',
+                'is_main' => true
             ]);
 
             DB::commit();

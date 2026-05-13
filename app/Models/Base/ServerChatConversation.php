@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $id_server
  * @property string $channel_text_name
  * @property string|null $description
+ * @property bool $is_main
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  *
@@ -26,6 +27,7 @@ class ServerChatConversation extends Model
 	protected $table = 'server_chat_conversations';
 
 	protected $casts = [
-		'id_server' => 'int'
+		'id_server' => 'int',
+		'is_main' => 'bool'
 	];
 }

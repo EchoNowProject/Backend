@@ -15,6 +15,7 @@ return new class extends Migration {
             $table->integer('id_server');
             $table->string('channel_text_name');
             $table->text('description')->nullable();
+            $table->boolean('is_main')->default(false);
             $table->timestamps();
         });
     }

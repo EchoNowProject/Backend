@@ -195,7 +195,7 @@ class UserController extends Controller
     private function updateImageReferences(int $userId, string $fileName)
     {
         IndividualChatConversationParticipant::where('user_id', $userId)->update(['avatar_image' => $fileName]);
-        GroupChatConversationParticipant::here('user_id', $userId)->update(['avatar_image' => $fileName]);
+        GroupChatConversationParticipant::where('user_id', $userId)->update(['avatar_image' => $fileName]);
     }
 
     private function deleteImageReferences(int $userId)
@@ -211,7 +211,7 @@ class UserController extends Controller
         GroupChatConversationParticipant::where('user_id', $userId)->update(['username' => $newUsername]);
 
         Friend::where('first_user_id', $userId)->update(['first_user_username' => $newUsername]);
-        
+
         Friend::where('second_user_id', $userId)->update(['second_user_username' => $newUsername]);
 
         UserAlert::where('source_user_id', $userId)->where('type', 'friend_request')->update(['message' => '¡' . $newUsername . " quiere ser tu amigo!"]);

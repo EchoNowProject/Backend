@@ -34,4 +34,9 @@ class Server extends BaseServer
 			}
 		});
 	}
+
+	public function mainConversation()
+	{
+		return $this->hasOne(ServerChatConversation::class, 'id_server', 'id')->where('is_main', true);
+	}
 }
