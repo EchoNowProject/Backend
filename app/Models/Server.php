@@ -39,4 +39,9 @@ class Server extends BaseServer
 	{
 		return $this->hasOne(ServerChatConversation::class, 'id_server', 'id')->where('is_main', true);
 	}
+
+	public function conversations()
+	{
+		return $this->hasMany(ServerChatConversation::class, 'id_server', 'id')->where('is_main', false); // Es posible que lo necesitemos sin el flag en algunos casos
+	}
 }

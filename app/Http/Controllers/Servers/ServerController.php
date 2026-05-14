@@ -69,7 +69,7 @@ class ServerController extends Controller
      */
     public function show(string $id)
     {
-        //
+        return Server::with(['mainConversation', 'conversations'])->findOrFail($id);
     }
 
     /**
