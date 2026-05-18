@@ -19,7 +19,12 @@ class ServerController extends Controller
      */
     public function index()
     {
-        return Server::with('mainConversation')->where('owner_id', Auth::id())->get();
+        return Server::where(function ($query) {
+            $query->where('owner_id', Auth::id())
+                ->orWhereHas('participants', function ($q) {
+                    $q->where('user_id', Auth::id());
+                });
+        })->with('mainConversation')->get();
     }
 
     /**

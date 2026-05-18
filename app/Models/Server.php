@@ -44,4 +44,9 @@ class Server extends BaseServer
 	{
 		return $this->hasMany(ServerChatConversation::class, 'id_server', 'id')->where('is_main', false); // Es posible que lo necesitemos sin el flag en algunos casos
 	}
+
+	public function participants()
+	{
+		return $this->belongsToMany(User::class, 'server_members', 'server_id', 'user_id');
+	}
 }

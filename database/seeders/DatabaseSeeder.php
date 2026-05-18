@@ -14,22 +14,22 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
 
-        // factories
+        // * For Development
         User::factory(50)->create();
 
-        // Seeders
-        $this->call([
+        if (config('app.env') === 'local') {
+            $this->call([
+                StatusUserSeeder::class,
+                UserSeeder::class,
+                UserSettingsSeeder::class,
+                UserNotificationsSettingsSeeder::class,
+                UserPrivacySettingSeedeer::class,
+                FriendSeeder::class,
+            ]);
+        }
 
-            // Users
-            StatusUserSeeder::class,
-            UserSeeder::class,
-            UserSettingsSeeder::class,
-            UserNotificationsSettingsSeeder::class,
-            UserPrivacySettingSeedeer::class,
-
-            // Types of messages
-            TypeMessageSeeder::class,
-        ]);
+        // * For Production
+        $this->call([TypeMessageSeeder::class]);
 
         /* Examples */
         /* User::factory()->create([
