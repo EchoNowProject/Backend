@@ -18,9 +18,11 @@ class ServerSettingsController extends Controller
     {
         $ownerId = Server::findOrFail($idServer)->owner_id;
 
-        $serverMembers = ServerMember::where('server_id', (int) $idServer)->get()->pluck('user_id');
+        $serverMembers = ServerMember::where('server_id', (int) $idServer)
+            ->pluck('user_id')
+            ->toArray();
 
-        $members = [$serverMembers, $ownerId];
+        $members = array_merge($serverMembers, [$ownerId]);
 
         $userId = Auth::id();
 
