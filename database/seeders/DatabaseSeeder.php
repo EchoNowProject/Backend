@@ -24,7 +24,7 @@ class DatabaseSeeder extends Seeder
                 UserSettingsSeeder::class,
                 UserNotificationsSettingsSeeder::class,
                 UserPrivacySettingSeedeer::class,
-                FriendSeeder::class,
+                //FriendSeeder::class,
             ]);
         }
 

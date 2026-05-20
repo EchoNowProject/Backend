@@ -19,7 +19,8 @@ Route::middleware('userlogged')->group(function () {
         Route::get('get-users-available/{id}', [ServerSettingsController::class, 'getUsersAvailable']);
     });
 
-    Route::prefix('server-channel')->group(function () {
+    Route::prefix('server-channels')->group(function () {
         Route::post('create-channel', [ChannelController::class, 'createChannel']);
+        Route::get('get-all/{idServer}', [ChannelController::class, 'getAllChannels']);
     });
 });
