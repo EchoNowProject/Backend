@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Servers;
 
+use App\Actions\Images\UpdateImage;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreServerRequest;
 use App\Models\Server;
@@ -82,7 +83,47 @@ class ServerController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $server = Server::findOrFail($id);
+
+        if ($server->owner_id !== Auth::id()) {
+            return response()->json(['message' => 'No tienes permisos para editar este servidor'], 403);
+        }
+
+        try {
+            DB::beginTransaction();
+
+            $updateData = [
+                'name' => $request->name,
+                'description' => $request->description ?? null,
+                'type_server' => $request->type_server,
+            ];
+
+            if ($request->has('file_avatar_image')) {
+
+                $newName = Str::random(20);
+                $updateImage = new UpdateImage();
+                $imageUpload = $updateImage->update($request['file_avatar_image']['base64'], Server::IMAGESERVERPATH . $newName);
+
+                if ($imageUpload['success']) {
+                    $fileName = $newName . '.' . $imageUpload['extension'];
+                    $updateData['avatar_img'] = $fileName;
+                }
+
+            }
+
+            $server->update($updateData);
+
+            DB::commit();
+
+            return response()->json([
+                'message' => 'Servidor actualizado correctamente',
+                'server' => $server->load('mainConversation'),
+            ], 200);
+
+        } catch (Exception $error) {
+            DB::rollBack();
+            return response()->json($error->getMessage(), 500);
+        }
     }
 
     /**

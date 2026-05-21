@@ -4,11 +4,14 @@ namespace App\Models;
 
 use App\Models\Base\Server as BaseServer;
 use Exception;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class Server extends BaseServer
 {
+	const IMAGESERVERPATH = "/servers/";
+
 	protected $fillable = [
 		'name',
 		'description',
@@ -17,6 +20,8 @@ class Server extends BaseServer
 		'invitation_code',
 		'type_server',
 	];
+
+	protected $appends = ['file_avatar_image'];
 
 	protected static function boot(): void
 	{
@@ -48,5 +53,30 @@ class Server extends BaseServer
 	public function participants()
 	{
 		return $this->belongsToMany(User::class, 'server_members', 'server_id', 'user_id');
+	}
+
+	protected function fileAvatarImage(): Attribute
+	{
+		return Attribute::make(
+			get: function () {
+				if (!$this->avatar_img) {
+					return null;
+				}
+
+				$path = Storage::disk('public')->path(self::IMAGESERVERPATH . $this->avatar_img);
+
+				if (!file_exists($path)) {
+					return null;
+				}
+
+				$type = pathinfo($path, PATHINFO_EXTENSION);
+				$data = file_get_contents($path);
+
+				return [
+					'base64' => base64_encode($data),
+					'mime_type' => $type,
+				];
+			}
+		);
 	}
 }

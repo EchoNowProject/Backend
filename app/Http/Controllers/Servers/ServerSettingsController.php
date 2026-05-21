@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Servers;
 
+use App\Actions\Images\DeleteImage;
 use App\Http\Controllers\Controller;
 use App\Models\Friend;
 use App\Models\Server;
@@ -14,6 +15,11 @@ use Illuminate\Support\Facades\DB;
 class ServerSettingsController extends Controller
 {
 
+    /**
+     * Funcion que recoge los amigos disponibles para mostrar en la lista de miembros que podemos invitar
+     * @param mixed $idServer
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function getUsersAvailable($idServer)
     {
         $ownerId = Server::findOrFail($idServer)->owner_id;
@@ -52,6 +58,12 @@ class ServerSettingsController extends Controller
         return response()->json($friends, 200);
     }
 
+    /**
+     * Funcion para invitar a un amigo a un servidor
+     * ! Ahora lo mete a fuerza bruta (hacer que se meta en alertas del usuario y sea el quien acepte o no)
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function inviteUser(Request $request)
     {
         DB::beginTransaction();
@@ -65,5 +77,34 @@ class ServerSettingsController extends Controller
             DB::rollBack();
             return response()->jsonp($error->getMessage(), 400);
         }
+    }
+
+    /**
+     * Funcion que elimina la Imagen de un Servidor
+     * @param mixed $idServer
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function deleteImageServer($idServer)
+    {
+
+        $server = Server::findOrFail((int) $idServer);
+
+        if ($server->owner_id != Auth::id())
+            return response()->json('Este usuario no puede hacer cambios en el servidor', 401);
+
+        $path = Server::IMAGESERVERPATH . $server->avatar_img;
+
+        $deleteImage = new DeleteImage();
+        if ($deleteImage->delete($path)) {
+            DB::beginTransaction();
+            $server->update(['avatar_img' => null]);
+
+            DB::commit();
+
+            return response()->json($server, 200);
+        }
+
+        return response()->json('No se ha podido eliminar la foto del servidor', 500);
+
     }
 }

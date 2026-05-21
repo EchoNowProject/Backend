@@ -12,11 +12,7 @@ Route::middleware('userlogged')->group(function () {
     Route::prefix('server')->group(function () {
         Route::post('invite-user', [ServerSettingsController::class, 'inviteUser']);
         Route::get('get-users-available/{id}', [ServerSettingsController::class, 'getUsersAvailable']);
-    });
-
-    Route::prefix('server')->group(function () {
-        Route::post('invite-user', [ServerSettingsController::class, 'inviteUser']);
-        Route::get('get-users-available/{id}', [ServerSettingsController::class, 'getUsersAvailable']);
+        Route::delete('delete-image/{id}', [ServerSettingsController::class, 'deleteImageServer']);
     });
 
     Route::prefix('server-channels')->group(function () {
