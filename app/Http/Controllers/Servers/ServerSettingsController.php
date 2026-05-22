@@ -107,4 +107,46 @@ class ServerSettingsController extends Controller
         return response()->json('No se ha podido eliminar la foto del servidor', 500);
 
     }
+
+    /**
+     * Funcion que obtiene los miembros de un servidor incluido el propietario
+     * @param mixed $idServer
+     * @return array
+     */
+    public function getMembersServer($idServer)
+    {
+        $server = Server::findOrFail((int) $idServer);
+
+        $members = $server->participants()
+            ->select('users.id', 'users.username', 'users.status')
+            ->with('statusUser')
+            ->get()
+            ->toArray();
+
+        if ($server->owner) {
+            $members[] = $server->owner()
+                ->select('users.id', 'users.username', 'users.status')
+                ->with('statusUser')
+                ->first()
+                ->toArray();
+        }
+
+        return $members;
+    }
+
+    /**
+     * Funcion que elimina un miembro determinado del servidor
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function deleteMemberServer(Request $request)
+    {
+
+        if (!$request->idServer && !$request->idUser)
+            return response()->json('No se ha encontrado servidor o usuario', 406);
+
+        ServerMember::where('user_id', $request->idUser)->where('server_id', $request->idServer)->delete();
+
+        return response()->json('Miembro del servidor eliminado con exito', 200);
+    }
 }

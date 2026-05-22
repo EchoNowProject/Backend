@@ -10,9 +10,11 @@ Route::middleware('userlogged')->group(function () {
     Route::apiResource('servers', ServerController::class);
 
     Route::prefix('server')->group(function () {
-        Route::post('invite-user', [ServerSettingsController::class, 'inviteUser']);
         Route::get('get-users-available/{id}', [ServerSettingsController::class, 'getUsersAvailable']);
+        Route::get('members/{id}', [ServerSettingsController::class, 'getMembersServer']);
+        Route::post('invite-user', [ServerSettingsController::class, 'inviteUser']);
         Route::delete('delete-image/{id}', [ServerSettingsController::class, 'deleteImageServer']);
+        Route::delete('delete-member', [ServerSettingsController::class, 'deleteMemberServer']);
     });
 
     Route::prefix('server-channels')->group(function () {

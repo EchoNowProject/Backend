@@ -55,6 +55,11 @@ class Server extends BaseServer
 		return $this->belongsToMany(User::class, 'server_members', 'server_id', 'user_id');
 	}
 
+	public function owner()
+	{
+		return $this->hasOne(User::class, 'id', 'owner_id');
+	}
+
 	protected function fileAvatarImage(): Attribute
 	{
 		return Attribute::make(
