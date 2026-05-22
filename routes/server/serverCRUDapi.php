@@ -18,5 +18,7 @@ Route::middleware('userlogged')->group(function () {
     Route::prefix('server-channels')->group(function () {
         Route::post('create-channel', [ChannelController::class, 'createChannel']);
         Route::get('get-all/{idServer}', [ChannelController::class, 'getAllChannels']);
+        Route::put('update-channel/{id}', [ChannelController::class, 'updateChannel']);
+        Route::delete('delete/{id}', [ChannelController::class, 'deleteChannel']);
     });
 });
