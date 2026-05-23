@@ -42,6 +42,7 @@ class GroupsChatsController extends Controller
             ->whereHas('participants', function ($query) {
                 $query->where('user_id', Auth::id());
             })
+            ->with('messages.filesMessage')
             ->first();
 
         if (!$conversation) {
