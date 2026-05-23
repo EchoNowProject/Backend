@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Chats;
 
 use App\Http\Controllers\Controller;
 use App\Models\ServerChatConversation;
-use Auth;
 use Illuminate\Http\Request;
 
 class ServerChatsController extends Controller
@@ -25,6 +24,7 @@ class ServerChatsController extends Controller
             /* ->whereHas('participants', function ($query) {
                 $query->where('user_id', Auth::id());
             }) */
+            ->with('messages.filesMessage')
             ->first();
 
         if (!$conversation) {
