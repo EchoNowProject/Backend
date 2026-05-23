@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Servers;
 
-use App\Actions\Images\DeleteImage;
+use App\Actions\Files\DeleteFile;
 use App\Http\Controllers\Controller;
 use App\Models\Friend;
 use App\Models\Server;
@@ -94,7 +94,7 @@ class ServerSettingsController extends Controller
 
         $path = Server::IMAGESERVERPATH . $server->avatar_img;
 
-        $deleteImage = new DeleteImage();
+        $deleteImage = new DeleteFile();
         if ($deleteImage->delete($path)) {
             DB::beginTransaction();
             $server->update(['avatar_img' => null]);

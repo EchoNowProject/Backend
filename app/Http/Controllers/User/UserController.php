@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\User;
 
+use App\Actions\Files\DeleteFile;
 use App\Actions\Fortify\CreateNewUser;
-use App\Actions\Images\DeleteImage;
 use App\Actions\Images\UpdateImage;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreUserRequest;
@@ -146,7 +146,7 @@ class UserController extends Controller
 
             // Eliminar imagen anterior
             if ($user->avatar_img) {
-                $deleteImage = new DeleteImage();
+                $deleteImage = new DeleteFile();
                 $deleteImage->delete(self::IMAGEUSERPATH . $user->avatar_img);
             }
 

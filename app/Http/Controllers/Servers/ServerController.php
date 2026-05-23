@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Servers;
 
+use App\Actions\Files\DeleteFile;
 use App\Actions\Images\UpdateImage;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreServerRequest;
@@ -11,6 +12,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class ServerController extends Controller
@@ -98,17 +100,21 @@ class ServerController extends Controller
                 'type_server' => $request->type_server,
             ];
 
-            if ($request->has('file_avatar_image')) {
+            if ($request->has('file_avatar_image') && !empty($request->input('file_avatar_image.base64'))) {
+                $base64 = $request->input('file_avatar_image.base64');
 
-                $newName = Str::random(20);
-                $updateImage = new UpdateImage();
-                $imageUpload = $updateImage->update($request['file_avatar_image']['base64'], Server::IMAGESERVERPATH . $newName);
+                // Solo procesamos la imagen si contiene una coma lo cual indica que es un nuevo
+                // archivo subido en formato data URI (base64) desde el frontend
+                if (str_contains($base64, ',')) {
+                    $newName = Str::random(20);
+                    $updateImage = new UpdateImage();
+                    $imageUpload = $updateImage->update($base64, Server::IMAGESERVERPATH . $newName);
 
-                if ($imageUpload['success']) {
-                    $fileName = $newName . '.' . $imageUpload['extension'];
-                    $updateData['avatar_img'] = $fileName;
+                    if ($imageUpload['success']) {
+                        $fileName = $newName . '.' . $imageUpload['extension'];
+                        $updateData['avatar_img'] = $fileName;
+                    }
                 }
-
             }
 
             $server->update($updateData);
@@ -131,6 +137,55 @@ class ServerController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $server = Server::findOrFail($id);
+        $actionDeleteFile = new DeleteFile();
+
+
+        if ($server) {
+
+            if (Auth::id() != $server->owner_id) {
+                return response()->json('No tienes permiso para eliminar el servidor', 401);
+            }
+
+            DB::beginTransaction();
+
+            // Eliminacion de mensajes -> archivos
+            foreach ($server->allConversations as $conversation) {
+
+                foreach ($conversation->messages as $message) {
+
+                    foreach ($message->filesMessage as $fileModel) {
+
+                        if ($fileModel->path_file) {
+
+                            Log::debug($fileModel->path_file);
+
+                            $actionDeleteFile->delete($fileModel->path_file);
+                        }
+                    }
+
+                    $message->filesMessage()->delete();
+                }
+
+                $conversation->messages()->delete();
+            }
+
+            $server->allConversations()->delete();
+            $server->participants()->detach();
+
+            if ($server->avatar_img) {
+                $path = Server::IMAGESERVERPATH . $server->avatar_img;
+                $actionDeleteFile->delete($path);
+            }
+
+            $server->delete();
+            DB::commit();
+
+            return response()->json('El servidor se ha eliminado con éxito', 200);
+        }
+
+        DB::rollBack();
+
+        return response()->json('No es ha podido eliminar el sevidor. Porfavor contacte con el administrador', 500);
     }
 }
