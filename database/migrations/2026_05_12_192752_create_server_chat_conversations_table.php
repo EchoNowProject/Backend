@@ -10,11 +10,12 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('server_members', function (Blueprint $table) {
+        Schema::create('server_chat_conversations', function (Blueprint $table) {
             $table->id();
-            $table->integer('server_id');
-            $table->integer('user_id');
-            $table->integer('role_id')->nullable();
+            $table->integer('id_server');
+            $table->string('channel_text_name');
+            $table->text('description')->nullable();
+            $table->boolean('is_main')->default(false);
             $table->timestamps();
         });
     }
@@ -24,6 +25,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('server_members');
+        Schema::dropIfExists('server_chat_conversations');
     }
 };

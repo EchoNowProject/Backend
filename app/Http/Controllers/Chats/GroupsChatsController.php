@@ -42,14 +42,16 @@ class GroupsChatsController extends Controller
             ->whereHas('participants', function ($query) {
                 $query->where('user_id', Auth::id());
             })
-            ->with('messages.filesMessage')
             ->first();
 
         if (!$conversation) {
             return response()->json([], 404);
         }
 
-        return response()->json(['messages' => $conversation->messages, 'conversation' => $conversation], 200);
+        $messages = $conversation->messages;
+        $conversation->unsetRelation('messages');
+
+        return response()->json(['messages' => $messages, 'conversation' => $conversation], 200);
     }
 
     /**

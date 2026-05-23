@@ -40,7 +40,7 @@ class StoreServerRequest extends FormRequest
     {
         return [
             'name.required' => 'El nombre del servidor es obligatorio',
-            'name.unique'   => 'Ya tienes un servidor con ese nombre',
+            'name.unique' => 'Ya tienes un servidor con ese nombre',
             'type_server.required' => 'El tipo de servidor al que va dirigido es obligatorio',
         ];
     }

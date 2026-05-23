@@ -6,13 +6,16 @@ use App\Actions\Chats\ChatActions;
 use App\Actions\Files\UpdateFile;
 use App\Events\GroupChatEvent;
 use App\Events\IndividualChatEvent;
+use App\Events\ServerChatEvent;
 use App\Http\Controllers\Controller;
-use App\Models\GroupChatConversationParticipant;
 use App\Models\GroupChatMessage;
 use App\Models\GroupChatMessagesFile;
 use App\Models\IndividualChatConversationParticipant;
 use App\Models\IndividualChatMessage;
 use App\Models\IndividualChatMessagesFile;
+use App\Models\ServerChatMessage;
+use App\Models\ServerChatMessagesFile;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -47,13 +50,21 @@ class ChatGeneralController extends Controller
                 return $this->saveMessageGroupChat($request, $idConversation);
 
             case 'Server':
-                # code...
-                break;
+                if (!$request->data['serverId']) {
+                    throw new Exception('No se ha encontrado el servidor de referencia', 500);
+                }
+
+                $idServer = (int) $request->data['serverId'];
+
+                $this->baseUrlFiles = "/messages/serversChat/$idServer/$idConversation/";
+                return $this->saveMessageServerChat($request, $idConversation, $idServer);
 
             default:
                 return response()->json('No se ha encontrado el tipo de conversacion actual', 404);
         }
     }
+
+    //-----------------------------Funciones privadas-----------------------------
 
     /**
      * Guarda el Mensaje en un Chat Individual
@@ -139,8 +150,45 @@ class ChatGeneralController extends Controller
         return response()->json($message, 200);
     }
 
-    //-----------------------------Funciones privadas-----------------------------
+    /**
+     * Guarda el Mensaje en un Chat Grupal
+     * @param Request $request
+     * @param int $idConversation
+     * @return \Illuminate\Http\JsonResponse
+     */
+    private function saveMessageServerChat(Request $request, int $idConversation, int $idServer)
+    {
 
+        $message = ServerChatMessage::create([
+            'conversation_id' => $idConversation,
+            'user_sender_id' => Auth::id(),
+            'user_sender_name' => Auth::user()->username,
+            'content' => $request->data['message'] ?? null,
+            'has_file' => $request->data['files'] != null ? true : false,
+            'type_msg' => ChatActions::setTypeMessage($request->data['message'], $request->data['files']),
+        ]);
+
+        if ($request->data['files'] != null) {
+            $fileSaved = $this->uploadFiles($request->data['files']);
+
+            foreach ($fileSaved as $file) {
+                if ($file['success'] == true)
+                    ServerChatMessagesFile::create([
+                        'message_id' => $message->id,
+                        'file_name' => $file['file_name'],
+                        'path_file' => $file['path'],
+                    ]);
+            }
+
+            // Cargamos la relación para que el frontend reciba los archivos adjuntos
+            $message->load('filesMessage');
+        }
+
+        // Se lanza evento al websocket
+        broadcast(new ServerChatEvent($message, $idConversation, $idServer))->toOthers();
+
+        return response()->json($message, 200);
+    }
 
     /**
      * Funcion que se utiliza para subir archivos a una ruta indicada
