@@ -13,7 +13,7 @@ class StatusUserSeeder extends Seeder
      */
     public function run(): void
     {
-        $statusNames = ['online', 'sleeping', 'offline', 'invisible', 'do not disturb', 'in calling'];
+        $statusNames = ['En línea', 'Ausente', 'Desconectado', 'Invisible', 'No molestar', 'En llamada'];
 
         foreach ($statusNames as $index => $statusName) {
             StatusUser::create([
