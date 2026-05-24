@@ -17,16 +17,16 @@ class DatabaseSeeder extends Seeder
         // * For Development
         User::factory(50)->create();
 
-        if (config('app.env') === 'local') {
-            $this->call([
-                StatusUserSeeder::class,
-                UserSeeder::class,
-                UserSettingsSeeder::class,
-                UserNotificationsSettingsSeeder::class,
-                UserPrivacySettingSeedeer::class,
-                //FriendSeeder::class,
-            ]);
-        }
+        // if (config('app.env') === 'local') {
+        $this->call([
+            StatusUserSeeder::class,
+            UserSeeder::class,
+            UserSettingsSeeder::class,
+            UserNotificationsSettingsSeeder::class,
+            UserPrivacySettingSeedeer::class,
+            //FriendSeeder::class,
+        ]);
+        // }
 
         // * For Production
         $this->call([TypeMessageSeeder::class]);
