@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Actions\Images;
+namespace App\Actions\Files;
 
 use Illuminate\Support\Facades\Storage;
 
-class DeleteImage
+class DeleteFile
 {
 
     /**
-     * Function que comprueba que existe la ruta y elimina la imagen
+     * Function que comprueba que existe la ruta y elimina el fichero
      * @param string $path
      * @return bool
      */
